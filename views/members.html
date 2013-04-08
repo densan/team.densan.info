@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{>head}}
+</head>
+<body>
+  <div id="wrap">
+    {{>menu}}
+    
+    <div class="container">
+      {{>error}}
+      
+      <h1>Densan Members</h1>
+      {{#members}}
+        <p>id: {{id}}</p>
+        {{#name}}
+        <p>name: {{last}} {{first}}</p>
+        {{/name}}
+        <p>email: {{email}}</p>
+        <p>team:</p>
+        <ul>
+        {{#team}}
+          <li>{{.}}</li>
+        {{/team}}
+        </ul>
+        <hr>
+      {{/members}}
+    </div>
+  </div>
+  
+  {{>footer}}
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+</body>
+</html>

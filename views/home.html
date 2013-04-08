@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{>head}}
+</head>
+<body>
+  <div id="wrap">
+    {{>menu}}
+    
+    <div class="container">
+      {{>error}}
+      
+      <h1>Your Profile</h1>
+      {{#profile}}
+        <p>id: {{id}}</p>
+        {{#name}}
+        <p>name: {{last}} {{first}}</p>
+        {{/name}}
+        <p>email: {{email}}</p>
+        <p>team:</p>
+        <ul>
+          {{#team}}
+          <li>{{.}}</li>
+          {{/team}}
+        </ul>
+      {{/profile}}
+    </div>
+  </div>
+  
+  {{>footer}}
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+</body>
+</html>

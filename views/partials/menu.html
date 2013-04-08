@@ -1,0 +1,18 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <ul class="nav">
+        <li class="{{#menu}}Home{{/menu}}"><a href="/">Home</a></li>
+        <li class="{{#menu}}Members{{/menu}}">
+          <a href="/members">Members</a>
+          <ul>
+          {{#teams}}
+            <li><a href="/members#{{.}}">{{.}}</a></li>
+          {{/teams}}
+          </ul>
+        </li>
+        <li class="{{#menu}}Logout{{/menu}}"><a href="/logout">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</div>

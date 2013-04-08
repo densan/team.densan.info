@@ -1,0 +1,16 @@
+@charset "utf-8";
+
+header.main {
+  margin-bottom: 40px;
+}
+
+.control-group .controls .value-item {
+  padding: 5px 10px;
+}
+
+.controls .form-item {
+  width: 206px;
+}
+.controls input.form-item {
+  width: 192px;
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{>head}}
+</head>
+<body>
+  <div id="wrap">
+    <div class="container">
+      {{>error}}
+      
+      <header class="text-center main">
+        <h1>team.densan.info</h1>
+        <p class="lead">- 電算部員専用サイト -</p>
+      </header>
+      
+      <section class="row-fluid">
+        <div class="span4 offset4">
+          <p class="text-info">stumail.hit.ac.jp のメールアドレスで認証してください。</p>
+          <a href="auth" class="btn btn-large btn-block">Google Login</a>
+        </div>
+      </section>
+    </div>
+  </div>
+  
+  {{>footer}}
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+</body>
+</html>

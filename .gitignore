@@ -1,0 +1,8 @@
+*.
+!.gitignore
+
+node_modules
+*.log
+
+db
+Thumbs.db
