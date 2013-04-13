@@ -4,6 +4,7 @@
 
 var validator = require("validator"),
     model = require("../models"),
+    autoloader = require("../libs/autoloader"),
     Validator = validator.Validator;
 
 // Validator settings
@@ -16,7 +17,5 @@ Validator.prototype.getErrors = function () {
 };
 
 module.exports = function (app, passport) {
-  require("./oauth")(app, passport, model);
-  require("./pages")(app, Validator, model);
-  return app;
+  return autoloader(__dirname, app, passport, model);
 };

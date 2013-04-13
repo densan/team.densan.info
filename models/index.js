@@ -2,10 +2,8 @@
  * Model Index
  */
 
-var mongoose = require("mongoose");
+var mongoose = require("mongoose"),
+    autoloader = require("../libs/autoloader"),
+    db = mongoose.connect("mongodb://localhost/densan");
 
-var db = mongoose.connect("mongodb://localhost/densan");
-
-module.exports = {
-  User: require("./user")(mongoose, db)
-};
+module.exports = autoloader(__dirname, mongoose, db);

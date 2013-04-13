@@ -12,7 +12,7 @@ module.exports = function (app, passport, model) {
   passport.deserializeUser(function (id, done) {
     done(null, id);
   });
-  
+
   passport.use(new googleStrategy({
     returnURL: "http://localhost:3000/auth/callback",
     realm: "http://localhost:3000/",
@@ -30,7 +30,7 @@ module.exports = function (app, passport, model) {
       role: 0,
       id: null
     };
-    
+
     // check HIT Student
     var is_HIT_student = profile.emails.some(function (item) {
       var email = item.value;
@@ -39,7 +39,7 @@ module.exports = function (app, passport, model) {
         user.id = email.slice(0, -18);
       return is_HIT_email;
     });
-    
+
     if (! is_HIT_student) {
       user.status = "ng";
       req.flash("error", {message: "HIT のメールアドレスで再度ログインしてください。"});
@@ -47,18 +47,17 @@ module.exports = function (app, passport, model) {
     } else {
       // id exist check
       model.User.findOne({id: user.id}, function (err, user_profile) {
-        console.log(user_profile);
-        
-        err && console.log(err);
-        
+        if (err)
+          console.log(err);
+
         if (user_profile === null)
           user.status = "new";
-        
+
         done(null, user);
       });
     }
   }));
-  
+
   // google auth
   app.get("/auth", passport.authenticate("google"));
   app.get("/auth/callback", passport.authenticate("google", {
