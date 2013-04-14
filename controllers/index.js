@@ -17,5 +17,10 @@ Validator.prototype.getErrors = function () {
 };
 
 module.exports = function (app, passport) {
-  return autoloader(__dirname, app, passport, model);
+  return autoloader(__dirname, {
+    app: app,
+    passport: passport,
+    model: model,
+    Validator: Validator
+  });
 };

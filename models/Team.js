@@ -3,16 +3,28 @@
  */
 
 module.exports = function (mongoose, db) {
-  mongoose.model("Team", new mongoose.Schema({
+  var TeamSchema = new mongoose.Schema({
     name: {
       type: String,
+      index: {unique: true},
       required: true
     },
     leader: {
       type: mongoose.Schema.ObjectId,
       ref: "User"
     }
-  }));
+  });
 
-  return db.model("Team");
+  TeamSchema.statics.getNameList = function (callback) {
+    var query = this.find("name").sort({name: 1});
+    query.exec(function (err, teams) {
+      teams = teams.map(function (team) {
+        return team.name;
+      });
+      callback(err, teams);
+    });
+    return query;
+  };
+
+  return mongoose.model("Team", TeamSchema);
 };

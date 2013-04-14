@@ -3,16 +3,18 @@
  */
 
 module.exports = function (mongoose, db) {
-  mongoose.model("Role", new mongoose.Schema({
+  var RoleSchema = new mongoose.Schema({
     name: {
       type: String,
+      index: {unique: true},
       required: true
     },
     permission: {
       type: Array,
-      required: true
+      required: true,
+      "default": ["login"]
     }
-  }));
+  });
 
-  return db.model("Role");
+  return mongoose.model("Role", RoleSchema);
 };

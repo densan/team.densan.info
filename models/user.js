@@ -3,7 +3,7 @@
  */
 
 module.exports = function (mongoose, db) {
-  mongoose.model("User", new mongoose.Schema({
+  var UserSchema = new mongoose.Schema({
     id: {
       type: String,
       unique: true,
@@ -26,17 +26,52 @@ module.exports = function (mongoose, db) {
     },
     team: [{
       type: mongoose.Schema.ObjectId,
-      ref: "Team"
+      ref: "Team",
+      required: true
     }],
     role: {
       type: mongoose.Schema.ObjectId,
-      ref: "Role"
+      ref: "Role",
+      required: true
     },
     timestamp: {
       type: Date,
       required: true
     }
-  }));
+  });
 
-  return db.model("User");
+  UserSchema.statics.getProfileList = function (id, callback) {
+    if (typeof id === "function")
+      callback = id;
+
+    var query = this.find();
+    if (typeof id === "string")
+      query = query.or([{id: id}]);
+    else if (typeof id === "object")
+      query = query.or(id.map(function (id) {
+        return {id: id};
+      }));
+
+    query = query.populate("team").populate("role");
+    query.exec(function (err, profiles) {
+      profiles = profiles.map(function (profile) {
+        profile = JSON.parse(JSON.stringify(profile));
+
+        profile.team = profile.team.map(function (team) {
+          return team.name;
+        });
+        profile.role = {
+          name: profile.role.name,
+          permission: profile.role.permission
+        };
+
+        return profile;
+      });
+      callback(err, profiles);
+    });
+
+    return query;
+  };
+
+  return mongoose.model("User", UserSchema);
 };

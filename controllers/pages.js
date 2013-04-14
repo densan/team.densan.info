@@ -2,10 +2,11 @@
  * Pages Controller
  */
 
-// あとで DB に移す
-var teams = ["CG", "Network", "Soft"];
+module.exports = function (context) {
+  var app = context.app,
+      model = context.model,
+      Validator = context.Validator;
 
-module.exports = function (app, Validator, model) {
   app.get("/", function (req, res) {
     res.locals({
       root: res.locals,
@@ -13,7 +14,7 @@ module.exports = function (app, Validator, model) {
       profile: null,
       title: "Login",
       template: "index",
-      teams: teams
+      teams: []
     });
 
     // check logged in
@@ -26,25 +27,42 @@ module.exports = function (app, Validator, model) {
           return res.redirect(redirect[0]);
 
         if (req.user.status === "new") {
+          // 新規登録画面
           res.locals.title = "New Account";
           res.locals.template = "new";
           res.locals.profile = req.user;
-        } else {
-          model.User.findOne({id: req.user.id}, function (err, user_profile) {
+          model.Team.getNameList(function (err, teams) {
             if (err)
               console.log(err);
 
-            console.log(user_profile);
+            res.locals.teams = teams;
+            res.render(res.locals.template);
+          });
+          return false;
+        } else {
+          // ログイン後画面
+          model.User.getProfileList(req.user.id, function (err, user_profiles) {
+            if (err)
+              console.log(err);
 
-            if (user_profile === null) {
+            console.log(user_profiles);
+
+            if (user_profiles.length === 0) {
               req.logout();
               return res.redirect("/");
             }
 
-            res.locals.profile = user_profile;
-            res.locals.title = "Home";
-            res.locals.template = "home";
-            res.render(res.locals.template);
+            model.Team.getNameList(function (err, teams) {
+              if (err)
+                console.log(err);
+
+              res.locals.profile = user_profiles[0];
+
+              res.locals.teams = teams;
+              res.locals.title = "Home";
+              res.locals.template = "home";
+              res.render(res.locals.template);
+            });
           });
           return false;
         }
@@ -61,11 +79,11 @@ module.exports = function (app, Validator, model) {
         req.flash("redirect", req.params.page);
         return res.redirect("/auth");
       } else {
-        model.User.findOne({id: req.user.id}, function (err, user_profile) {
+        model.User.getProfileList(req.user.id, function (err, user_profiles) {
           if (err)
             console.log(err);
 
-          if (user_profile === null)
+          if (user_profiles.length === 0)
             return res.redirect("/");
 
           next();
@@ -83,16 +101,23 @@ module.exports = function (app, Validator, model) {
       profile: null,
       title: "Members",
       template: "members",
-      teams: teams,
+      teams: [],
       members: []
     });
 
-    model.User.find({}, function (err, users) {
+    model.User.getProfileList(function (err, users) {
       if (err)
         console.log(err);
 
       res.locals.members = users;
-      res.render(res.locals.template);
+
+      model.Team.getNameList(function (err, teams) {
+        if (err)
+          console.log(err);
+
+        res.locals.teams = teams;
+        res.render(res.locals.template);
+      });
     });
   });
 
@@ -103,15 +128,20 @@ module.exports = function (app, Validator, model) {
       profile: null,
       title: "Admin",
       template: "admin",
-      teams: teams,
+      teams: [],
       members: []
     });
 
-    model.User.findOne({id: req.user.id}, function (err, user_profile) {
+    // check permission
+    if (req.user.role)
+      console.log(req.user.role.permission);
+
+    model.Team.getNameList(function (err, teams) {
       if (err)
         console.log(err);
 
-      console.log(user_profile.role);
+      res.locals.teams = teams;
+      res.render(res.locals.template);
     });
   });
 
@@ -126,34 +156,56 @@ module.exports = function (app, Validator, model) {
     if (req.user.status !== "new")
       return res.json(403, {message: "Forbidden"});
 
-    // validation
-    var valid = new Validator();
-    valid.check(req.body.team).isIn(teams);
-    valid.check(req.body.email).isEmail();
-    valid.check(req.body.email.slice(-18)).not("@stumail.hit.ac.jp");
+    model.Team.getNameList(function (err, teams) {
+      if (err)
+        console.log(err);
 
-    var errors = valid.getErrors();
-    if (errors.length > 0)
-      return res.json(400, {message: "Validation Error", errors: errors});
+      res.locals.teams = teams;
 
-    req.user.status = "ok";
-    req.user.team.push(req.body.team);
-    req.user.email = req.body.email;
-    req.user.timestamp = Date.now();
+      // validation
+      var valid = new Validator();
+      valid.check(req.body.team).isIn(teams);
+      valid.check(req.body.email).isEmail();
+      valid.check(req.body.email.slice(-18)).not("@stumail.hit.ac.jp");
 
-    var user = new model.User(req.user);
-    user.save(function (err) {
-      if (err) {
-        res.json({message: "Error", errors: [err]});
-        return console.log(err);
-      }
-      res.json({message: "OK"});
+      var errors = valid.getErrors();
+      if (errors.length > 0)
+        return res.json(400, {message: "Validation Error", errors: errors});
+
+      req.user.status = "ok";
+      req.user.team.push(req.body.team);
+      req.user.email = req.body.email;
+      req.user.timestamp = Date.now();
+
+      model.Role.findOne({name: "member"}, function (err, role) {
+        if (err)
+          console.log(err);
+
+        req.user.role = role;
+
+        var queries = req.user.team.map(function (team) {
+          return {name: team};
+        });
+
+        model.Team
+          .find()
+          .or(queries)
+          .exec(function (err, team) {
+            if (err)
+              console.log(err);
+
+            req.user.team = team;
+
+            var user = new model.User(req.user);
+            user.save(function (err) {
+              if (err) {
+                res.json({message: "Error", errors: [err]});
+                return console.log(err);
+              }
+              res.json({message: "OK"});
+            });
+          });
+      });
     });
-  });
-
-  // logout
-  app.get("/logout", function (req, res) {
-    req.logout();
-    res.redirect("/");
   });
 };

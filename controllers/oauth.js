@@ -4,7 +4,11 @@
 
 var googleStrategy = require("passport-google").Strategy;
 
-module.exports = function (app, passport, model) {
+module.exports = function (context) {
+  var app = context.app,
+      passport = context.passport,
+      model = context.model;
+
   // initialize authenticate
   passport.serializeUser(function (user, done) {
     done(null, user);
@@ -27,7 +31,7 @@ module.exports = function (app, passport, model) {
       },
       email: null,
       team: [],
-      role: 0,
+      role: null,
       id: null
     };
 
@@ -65,4 +69,10 @@ module.exports = function (app, passport, model) {
     failureRedirect: "/",
     failureFlash: true
   }));
+
+  // logout
+  app.get("/logout", function (req, res) {
+    req.logout();
+    res.redirect("/");
+  });
 };
