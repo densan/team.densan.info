@@ -17,7 +17,7 @@ module.exports = function (dir) {
     var name = module.slice(0, -3),
         func = require(path.resolve(path.join(dir, name)));
 
-    mod[name] = args.length > 1 ? func.apply(this, args) : func;
+    mod[name] = args.length > 0 ? func.apply(this, args) : func;
   });
 
   return mod;
