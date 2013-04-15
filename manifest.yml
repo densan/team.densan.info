@@ -1,0 +1,17 @@
+---
+applications:
+  .:
+    name: densan
+    framework:
+      name: node
+      info:
+        mem: 64M
+        description: Node.js Application
+        exec: 
+    infra: hp
+    url: ${name}.${target-base}
+    mem: 256M
+    instances: 1
+    services:
+      mongodb-ebf6b:
+        type: mongodb

@@ -17,11 +17,7 @@ module.exports = function (context) {
     done(null, id);
   });
 
-  passport.use(new googleStrategy({
-    returnURL: "http://localhost:3000/auth/callback",
-    realm: "http://localhost:3000/",
-    passReqToCallback: true
-  }, function (req, id, profile, done) {
+  passport.use(new googleStrategy(app.get("auth"), function (req, id, profile, done) {
     // user profile
     var user = {
       status: "ok",

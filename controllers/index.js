@@ -17,6 +17,15 @@ Validator.prototype.getErrors = function () {
 };
 
 module.exports = function (app, passport) {
+  var mongo = app.get("mongo"),
+      url = "mongodb://";
+
+  if (mongo.username && mongo.password)
+    url += mongo.username + ":" + mongo.password + "@";
+  url += mongo.hostname + ":" + mongo.port + "/" + mongo.db;
+
+  model = model(url);
+
   return autoloader(__dirname, {
     app: app,
     passport: passport,

@@ -6,7 +6,7 @@ module.exports = function (mongoose, db) {
   var UserSchema = new mongoose.Schema({
     id: {
       type: String,
-      unique: true,
+      index: {unique: true},
       required: true
     },
     name: {
@@ -54,6 +54,9 @@ module.exports = function (mongoose, db) {
 
     query = query.populate("team").populate("role");
     query.exec(function (err, profiles) {
+      if (err)
+        return callback(err, []);
+
       profiles = profiles.map(function (profile) {
         profile = JSON.parse(JSON.stringify(profile));
 

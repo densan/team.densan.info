@@ -13,6 +13,20 @@ var express = require("express"),
 // express server settings
 var app = express();
 app.configure(function () {
+  app.set("port", 3000);
+  app.set("mongo", {
+    hostname: "localhost",
+    port: 27017,
+    username: "",
+    password: "",
+    name: "",
+    db: "densan"
+  });
+  app.set("auth", {
+    returnURL: "http://localhost:3000/auth/callback",
+    realm: "http://localhost:3000/",
+    passReqToCallback: true
+  });
   app.set("view engine", "html");
   app.set("layout", "layout");
   app.set("partials", {
@@ -48,14 +62,27 @@ app.configure(function () {
 });
 
 app.configure("development", function () {
-  app.set("port", 3000);
   app.use(express.favicon());
   app.use(express.logger("dev"));
   app.use(express.errorHandler());
 });
 
 app.configure("production", function () {
-  app.set("port", 3000);
+  if (process.env.VCAP_APP_PORT)
+    app.set("port", process.env.VCAP_APP_PORT);
+
+  if (process.env.VCAP_SERVICES) {
+    var services = JSON.parse(process.env.VCAP_SERVICES);
+    if (services['mongodb-1.8'][0].credentials)
+      app.set("mongo", services['mongodb-1.8'][0].credentials);
+    
+    app.set("auth", {
+      returnURL: "http://densan.hp.af.cm/auth/callback",
+      realm: "http://densan.hp.af.cm",
+      passReqToCallback: true
+    });
+  }
+
   app.enable("view cache");
   app.use(express.compress());
   process.on("uncaughtException", function (err) {

@@ -18,6 +18,9 @@ module.exports = function (mongoose, db) {
   TeamSchema.statics.getNameList = function (callback) {
     var query = this.find("name").sort({name: 1});
     query.exec(function (err, teams) {
+      if (err)
+        return callback(err, []);
+
       teams = teams.map(function (team) {
         return team.name;
       });
