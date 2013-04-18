@@ -93,7 +93,7 @@
           console.log(e);
           alert("通信エラー");
         } finally {
-          if (res.message !== "Validation Error")
+          if (res.message !== "Error")
             return alert("通信エラー");
           
           alert(res.errors.join("\n"));

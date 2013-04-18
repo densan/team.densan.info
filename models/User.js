@@ -2,7 +2,7 @@
  * User Model
  */
 
-module.exports = function (mongoose, db) {
+module.exports = function (mongoose, db, Validator) {
   var UserSchema = new mongoose.Schema({
     id: {
       type: String,
@@ -22,7 +22,17 @@ module.exports = function (mongoose, db) {
     email: {
       type: String,
       index: {unique: true},
-      required: true
+      required: true,
+      validate: [function (value) {
+        if (! value)
+          return false;
+
+        var valid = new Validator();
+        valid.check(value).isEmail();
+        valid.check(value.slice(-18)).not("@stumail.hit.ac.jp");
+
+        return valid.getErrors().length === 0;
+      }, "invalid email address"]
     },
     team: [{
       type: mongoose.Schema.ObjectId,

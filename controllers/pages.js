@@ -162,27 +162,14 @@ module.exports = function (context) {
 
       res.locals.teams = teams;
 
-      // validation
-      var valid = new Validator();
-      valid.check(req.body.team).isIn(teams);
-      valid.check(req.body.email).isEmail();
-      valid.check(req.body.email.slice(-18)).not("@stumail.hit.ac.jp");
-
-      var errors = valid.getErrors();
-      if (errors.length > 0)
-        return res.json(400, {message: "Validation Error", errors: errors});
-
-      req.user.status = "ok";
-      req.user.team.push(req.body.team);
-      req.user.email = req.body.email;
-      req.user.timestamp = Date.now();
-
       model.Role.findOne({name: "member"}, function (err, role) {
         if (err)
           console.log(err);
 
         req.user.role = role;
 
+        req.user.team = [];
+        req.user.team.push(req.body.team);
         var queries = req.user.team.map(function (team) {
           return {name: team};
         });
@@ -195,13 +182,22 @@ module.exports = function (context) {
               console.log(err);
 
             req.user.team = team;
+            req.user.email = req.body.email;
+            req.user.timestamp = Date.now();
 
             var user = new model.User(req.user);
             user.save(function (err) {
               if (err) {
-                res.json({message: "Error", errors: [err]});
+                var errs = [];
+                for (var error in err.errors)
+                  errs.push(err.errors[error].type);
+
+                res.json(400, {message: "Error", errors: errs});
                 return console.log(err);
               }
+
+              req.user.status = "ok";
+
               res.json({message: "OK"});
             });
           });

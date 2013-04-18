@@ -24,7 +24,7 @@ module.exports = function (app, passport) {
     url += mongo.username + ":" + mongo.password + "@";
   url += mongo.hostname + ":" + mongo.port + "/" + mongo.db;
 
-  model = model(url);
+  model = model(url, Validator);
 
   return autoloader(__dirname, {
     app: app,

@@ -5,9 +5,9 @@
 var mongoose = require("mongoose"),
     autoloader = require("../libs/autoloader");
 
-module.exports = function (url) {
+module.exports = function (url, Validator) {
   var db = mongoose.connect(url),
-      model = autoloader(__dirname, mongoose, db);
+      model = autoloader(__dirname, mongoose, db, Validator);
 
   // initialize Team Data
   model.Team.find(function (err, teams) {
