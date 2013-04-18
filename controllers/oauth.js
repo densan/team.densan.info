@@ -42,7 +42,7 @@ module.exports = function (context) {
 
     if (! is_HIT_student) {
       user.status = "ng";
-      req.flash("error", {message: "HIT のメールアドレスで再度ログインしてください。"});
+      req.flash("error", {message: "HIT のメールアドレスで再度ログインしてください。　<a href='https://accounts.google.com/AddSession' target='_blank' data-toggle='tooltip' data-placement='bottom' title='このリンクから Google アカウントを追加し、再度ログインボタンを押してください。'>別のアカウントでログインするには</a>"});
       done(null, user);
     } else {
       // id exist check
