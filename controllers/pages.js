@@ -169,7 +169,10 @@ module.exports = function (context) {
         req.user.role = role;
 
         req.user.team = [];
-        req.user.team.push(req.body.team);
+        var team = req.body.team0;
+        for (var i = 0; team; team = req.body["team" + (++i)])
+          req.user.team[i] = team;
+
         var queries = req.user.team.map(function (team) {
           return {name: team};
         });

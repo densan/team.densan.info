@@ -37,11 +37,12 @@
               <label class="control-label" for="team">Team</label>
               <div class="controls">
                 <div style="width:206px" data-toggle="tooltip" data-placement="top" title="所属しているチームを選択してください。">
-                  <select id="team" name="team" class="form-item">
+                  <select name="team0" class="form-item">
                     {{#teams}}
                     <option value="{{.}}">{{.}}</option>
                     {{/teams}}
                   </select>
+                  <button id="add-team" class="btn btn-large btn-block fui-plus-16" type="button">&nbsp;Add Team</button>
                 </div>
               </div>
             </div>
@@ -69,35 +70,46 @@
   <script type="text/javascript" src="/js/bootstrap.js"></script>
   <script type="text/javascript" src="/js/jquery.dropkick-1.0.0.js"></script>
   <script type="text/javascript">
-    $("select").dropkick();
-    $("[data-toggle=tooltip]").tooltip({trigger: "hover"});
-    $("#sign_up").submit(function (e) {
-      e.preventDefault();
-      $ajax = $.ajax({
-        type: "post",
-        url: "/new",
-        dataType: "json",
-        data: $(this).serialize()
-      });
-      $ajax.done(function (res) {
-        if (res.message === "OK")
-          return location.reload(true);
-        
-        alert("通信エラー");
-      });
-      $ajax.fail(function (xhr) {
-        var res = {};
-        try {
-          res = JSON.parse(xhr.responseText);
-        } catch (e) {
-          console.log(e);
-          alert("通信エラー");
-        } finally {
-          if (res.message !== "Error")
-            return alert("通信エラー");
+    $(function () {
+      $("select").dropkick();
+      $("[data-toggle=tooltip]").tooltip({trigger: "hover"});
+      $("#sign_up").submit(function (e) {
+        e.preventDefault();
+        $ajax = $.ajax({
+          type: "post",
+          url: "/new",
+          dataType: "json",
+          data: $(this).serialize()
+        });
+        $ajax.done(function (res) {
+          if (res.message === "OK")
+            return location.reload(true);
           
-          alert(res.errors.join("\n"));
-        }
+          alert("通信エラー");
+        });
+        $ajax.fail(function (xhr) {
+          var res = {};
+          try {
+            res = JSON.parse(xhr.responseText);
+          } catch (e) {
+            // JSON parse error
+            console.log(e);
+          } finally {
+            if (res.message !== "Error")
+              return alert("通信エラー");
+            
+            alert(res.errors.join("\n"));
+          }
+        });
+      });
+      $("#add-team").click(function () {
+        var $select = $(this).parent().find("select:last"),
+            $new = $select.clone(),
+            index = Number($new.attr("name").slice(4)) + 1;
+        
+        $new.attr("name", "team" + index);
+        $select.after($new);
+        $new.dropkick();
       });
     });
   </script>

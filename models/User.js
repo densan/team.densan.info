@@ -72,7 +72,7 @@ module.exports = function (mongoose, db, Validator) {
 
         profile.team = profile.team.map(function (team) {
           return team.name;
-        });
+        }).sort();
         profile.role = {
           name: profile.role.name,
           permission: profile.role.permission
