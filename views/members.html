@@ -10,13 +10,20 @@
     <div class="container">
       {{>error}}
       
-      <h1>Densan Members</h1>
+      <h1>Densan Members - {{team}}</h1>
+      <p>部員数 {{members.length}} 人</p>
+      <hr>
       {{#members}}
+      <div>
+        {{#id}}
         <p>id: {{id}}</p>
+        {{/id}}
         {{#name}}
         <p>name: {{last}} {{first}}</p>
         {{/name}}
+        {{#email}}
         <p>email: {{email}}</p>
+        {{/email}}
         <p>team:</p>
         <ul>
         {{#team}}
@@ -24,6 +31,7 @@
         {{/team}}
         </ul>
         <hr>
+      </div>
       {{/members}}
     </div>
   </div>
