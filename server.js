@@ -62,7 +62,6 @@ app.configure(function () {
 });
 
 app.configure("development", function () {
-  app.use(express.favicon());
   app.use(express.logger("dev"));
   app.use(express.errorHandler());
 });
