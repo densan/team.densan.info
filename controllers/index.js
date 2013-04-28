@@ -26,10 +26,45 @@ module.exports = function (app, passport) {
 
   model = model(url, Validator);
 
-  return autoloader(__dirname, {
+  var routes = [],
+      router = {
+        get: proxy.bind(app, "get"),
+        post: proxy.bind(app, "post"),
+        put: proxy.bind(app, "put"),
+        head: proxy.bind(app, "head"),
+        "delete": proxy.bind(app, "delete"),
+        options: proxy.bind(app, "options"),
+        trace: proxy.bind(app, "trace")
+      };
+
+  function proxy(method, priority, path, ctrl) {
+    if (! (method in router))
+      throw Error("method must be one of the following (get, post, put, head, delete, options, trace).");
+    if (typeof priority !== "number")
+      throw TypeError("priority must be number");
+    if (typeof path !== "string")
+      throw TypeError("path must be string");
+    if (typeof ctrl !== "function")
+      throw TypeError("ctrl must be function");
+    routes.push({
+      priority: priority,
+      ctrl: app[method].bind(app, path, ctrl)
+    });
+  }
+
+  var module = autoloader(__dirname, {
     app: app,
+    router: router,
     passport: passport,
     model: model,
     Validator: Validator
   });
+
+  routes.sort(function (a, b) {
+    return a.priority - b.priority;
+  }).forEach(function (route) {
+    route.ctrl();
+  });
+
+  return module;
 };

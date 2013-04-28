@@ -6,6 +6,7 @@ var googleStrategy = require("passport-google").Strategy;
 
 module.exports = function (context) {
   var app = context.app,
+      router = context.router,
       passport = context.passport,
       model = context.model;
 
@@ -59,15 +60,15 @@ module.exports = function (context) {
   }));
 
   // google auth
-  app.get("/auth", passport.authenticate("google"));
-  app.get("/auth/callback", passport.authenticate("google", {
+  router.get(0, "/auth", passport.authenticate("google"));
+  router.get(0, "/auth/callback", passport.authenticate("google", {
     successRedirect: "/",
     failureRedirect: "/",
     failureFlash: true
   }));
 
   // logout
-  app.get("/logout", function (req, res) {
+  router.get(0, "/logout", function (req, res) {
     req.logout();
     res.redirect("/");
   });
