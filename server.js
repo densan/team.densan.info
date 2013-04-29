@@ -82,6 +82,12 @@ app.configure("production", function () {
       realm: "http://densan.hp.af.cm",
       passReqToCallback: true
     });
+  } else {
+    app.set("auth", {
+      returnURL: "http://team.densan.info/auth/callback",
+      realm: "http://team.densan.info",
+      passReqToCallback: true
+    });
   }
 
   app.enable("view cache");
