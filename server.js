@@ -69,12 +69,14 @@ app.configure("development", function () {
 app.configure("production", function () {
   if (process.env.VCAP_APP_PORT)
     app.set("port", process.env.VCAP_APP_PORT);
+  else
+    app.set("port", 61312);
 
   if (process.env.VCAP_SERVICES) {
     var services = JSON.parse(process.env.VCAP_SERVICES);
     if (services['mongodb-1.8'][0].credentials)
       app.set("mongo", services['mongodb-1.8'][0].credentials);
-    
+
     app.set("auth", {
       returnURL: "http://densan.hp.af.cm/auth/callback",
       realm: "http://densan.hp.af.cm",
