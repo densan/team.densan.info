@@ -59,14 +59,13 @@ module.exports = function (context) {
     }
   }));
 
-  // google auth
+  // check authenticate session
   var token = ~~(Math.random() * Math.pow(10, 8));
   router.get(0, "/auth", function (req, res, next) {
     req.flash("authenticate");
     req.flash("authenticate", token);
     next();
   });
-  router.get(0, "/auth", passport.authenticate("google"));
   router.get(0, "/auth/callback", function (req, res, next) {
     if (req.flash("authenticate")[0] === token)
       return next();
@@ -74,6 +73,8 @@ module.exports = function (context) {
     req.flash("error", {message: "予期せぬ認証エラー。再認証してください。"});
     res.redirect("/");
   });
+  // google auth
+  router.get(0, "/auth", passport.authenticate("google"));
   router.get(0, "/auth/callback", passport.authenticate("google", {
     successRedirect: "/",
     failureRedirect: "/auth/fail",
