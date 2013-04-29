@@ -46,8 +46,10 @@ module.exports = function (app, passport) {
       throw TypeError("path must be string");
     if (typeof ctrl !== "function")
       throw TypeError("ctrl must be function");
+
     routes.push({
-      priority: priority,
+      primary: priority,
+      secondary: routes.length,
       ctrl: app[method].bind(app, path, ctrl)
     });
   }
@@ -61,7 +63,8 @@ module.exports = function (app, passport) {
   });
 
   routes.sort(function (a, b) {
-    return a.priority - b.priority;
+    var d = a.primary - b.primary;
+    return d === 0 ? a.secondary - b.secondary : d;
   }).forEach(function (route) {
     route.ctrl();
   });

@@ -5,7 +5,7 @@
 var fs = require("fs"),
     path = require("path");
 
-var ignoreList = ["auth", "logout"];
+var ignoreList = [];
 fs.readdir(path.join(__dirname, "../static"), function (err, files) {
   if (err)
     throw err;
