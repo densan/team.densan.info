@@ -29,10 +29,10 @@ module.exports = function (mongoose, db, Validator) {
 
         var valid = new Validator();
         valid.check(value).isEmail();
-        valid.check(value.slice(-18)).not("@stumail.hit.ac.jp");
+        valid.check(value.slice(-10)).not(".hit.ac.jp");
 
         return valid.getErrors().length === 0;
-      }, "invalid email address"]
+      }, "不正なメールアドレスです"]
     },
     team: [{
       type: mongoose.Schema.ObjectId,

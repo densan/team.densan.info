@@ -35,7 +35,7 @@ module.exports = function (context) {
     // check HIT Student
     var is_HIT_student = profile.emails.some(function (item) {
       var email = item.value;
-      var is_HIT_email = email.slice(-18) === "@stumail.hit.ac.jp";
+      var is_HIT_email = email.slice(-10) === ".hit.ac.jp";
       if (is_HIT_email)
         user.id = email.slice(0, -18);
       return is_HIT_email;
