@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{>head}}
+</head>
+<body>
+  <div id="wrap">
+    {{>menu}}
+    
+    <div class="container">
+      {{>error}}
+      
+      <h1>Profile Settings</h1>
+      <p>あなたのプロフィール情報を編集出来ます。</p>
+      <hr>
+      {{#profile}}
+      <form id="profile">
+        <dl class="list">
+          <dt>id:</dt>
+          <dd>{{id}}</dd>
+        </dl>
+        <dl class="list">
+          <dt>Name:</dt>
+          <dd>{{#name}}{{last}} {{first}}{{/name}}</dd>
+        </dl>
+        <dl class="list">
+          <dt>Email:</dt>
+          <dd><input class="form-item" name="email" type="email" value="{{email}}" required></dd>
+        </dl>
+        <dl class="list">
+          <dt>Role:</dt>
+          <dd>{{role.name}}</dd>
+        </dl>
+        <dl class="list">
+          <dt>Team:</dt>
+          <dd id="teams">
+              {{#team}}
+              <div class="team-picker">
+                <select name="team{{index}}" class="form-item" data-value="{{.}}">
+                  {{#teams}}
+                  <option value="{{.}}">{{.}}</option>
+                  {{/teams}}
+                </select>
+                <button class="delete btn fui-cross-16" type="button"></button>
+              </div>
+              {{/team}}
+              <button id="add-team" class="team-picker btn btn-large btn-block fui-plus-16" type="button">&nbsp;Add Team</button>
+          </dd>
+        </dl>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </form>
+      {{/profile}}
+    </div>
+  </div>
+  
+  {{>footer}}
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/js/jquery.dropkick-1.0.0.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#profile").submit(function (e) {
+        e.preventDefault();
+        
+        var data = $(this).serializeArray();
+        data.push({
+          name: "_csrf",
+          value: "{{csrf_token}}"
+        });
+        
+        $ajax = $.ajax({
+          type: "post",
+          url: "/profile/save",
+          dataType: "json",
+          data: data
+        });
+        $ajax.done(function (res) {
+          if (res.message === "OK") {
+            alert("保存されました。");
+            return location.reload(true);
+          }
+          
+          alert("通信エラー");
+        });
+        $ajax.fail(function (xhr) {
+          var res = {};
+          try {
+            res = JSON.parse(xhr.responseText);
+          } catch (e) {
+            // JSON parse error
+            console.log(e);
+          } finally {
+            if (res.message !== "Error")
+              return alert("通信エラー");
+            
+            alert(res.errors.join("\n"));
+          }
+        });
+      });
+      
+      $("select[data-value]").each(function () {
+        $(this).val($(this).attr("data-value"));
+      }).dropkick();
+      
+      $teams = $("#teams");
+      
+      $("#add-team").click(function () {
+        var $picker = $teams.find("div.team-picker:last"),
+            $new = $picker.clone(),
+            $select = $new.find("select"),
+            index = Number($select.attr("name").slice(4)) + 1;
+        
+        $select.attr("name", "team" + index);
+        $picker.after($new);
+        $new.find("div.dk_container").remove();
+        $select.dropkick();
+      });
+      
+      $teams.on("click", "button.delete", function () {
+        $(this).parent().remove();
+      });
+    });
+  </script>
+</body>
+</html>

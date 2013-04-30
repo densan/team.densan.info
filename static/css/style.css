@@ -14,3 +14,34 @@ header.main {
 .controls input.form-item {
   width: 192px;
 }
+
+dl.list {
+  position: relative;
+  margin: 10px 0 20px 0;
+}
+dl.list dt {
+  width: 90px;
+  height: 25px;
+}
+dl.list dd {
+  position: relative;
+  margin: -25px 0 0 100px;
+}
+
+.team-picker {
+  position: relative;
+  width: 200px;
+}
+.team-picker > * {
+  width: 140px;
+}
+.team-picker > button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 42px;
+}
+#teams .team-picker:nth-of-type(1) button.delete {
+  display: none;
+}
