@@ -5,9 +5,9 @@ team.densan.info
 
 Setup
 -----
-1. Register [Google API Console](https://code.google.com/apis/console/)
-1. Install [Node.js v0.8](http://nodejs.jp/nodejs.org_ja/docs/v0.8/)
-1. Install [MongoDB v1.8](http://www.mongodb.org/)
-1. `npm install`
-1. `mongod --dbpath path/to/db`
-1. `npm start`
+1. Install [Node.js v0.10](http://nodejs.jp/nodejs.org_ja/docs/v0.10/)
+1. Install [MongoDB v2.4](http://www.mongodb.org/downloads/)
+1. プロジェクトディレクトリの直下で `npm install` を実行
+1. プロジェクトディレクトリの直下に `db` ディレクトリを作成
+1. db ディレクトリの中で `mongod --dbpath .` を(別の端末で)実行
+1. プロジェクトディレクトリの直下で `node boot development` を実行
