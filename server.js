@@ -47,7 +47,8 @@ app.configure(function () {
   app.use(express.bodyParser());
   app.use(express.cookieSession({
     secret: "exkeyprepass",
-    cookie: {maxAge: 60000 * 24 * 7}
+    // expire after 1 week
+    cookie: {maxAge: 1000 * 60 * 60 * 24 * 7}
   }));
   app.use(flash());
   app.use(express.csrf());
