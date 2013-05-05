@@ -60,14 +60,13 @@ module.exports = function (context) {
   }));
 
   // check authenticate session
-  var token = ~~(Math.random() * Math.pow(10, 8));
   router.get(0, "/auth", function (req, res, next) {
     req.flash("authenticate");
-    req.flash("authenticate", token);
+    req.flash("authenticate", app.get("token"));
     next();
   });
   router.get(0, "/auth/callback", function (req, res, next) {
-    if (req.flash("authenticate")[0] === token)
+    if (req.flash("authenticate")[0] === app.get("token"))
       return next();
 
     req.flash("error", {message: "予期せぬ認証エラー。再認証してください。"});

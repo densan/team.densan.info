@@ -42,6 +42,8 @@ app.configure(function () {
     }
   });
   app.set("views", path.join(__dirname, "views"));
+  // startup token
+  app.set("token", ~~(Math.random() * Math.pow(10, 8)));
   app.engine("html", hogan);
   app.use(express.cookieParser("secaccerss:c"));
   app.use(express.bodyParser());
