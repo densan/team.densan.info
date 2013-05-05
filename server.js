@@ -55,6 +55,7 @@ app.configure(function () {
   app.use(flash());
   app.use(express.csrf());
   app.use(function (req, res, next) {
+    // set csrf token
     res.locals.csrf_token = req.session._csrf;
     next();
   });
