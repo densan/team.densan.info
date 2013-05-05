@@ -10,7 +10,7 @@ module.exports = function (mongoose, db) {
       required: true
     },
     permission: {
-      type: Array,
+      type: [String],
       required: true,
       "default": ["login"]
     }
