@@ -57,6 +57,7 @@
   <script type="text/javascript" src="/js/libs/jquery.js"></script>
   <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.dropkick-1.0.0.js"></script>
+  <script type="text/javascript" src="/js/ajax.js"></script>
   <script type="text/javascript">
     $(function () {
       $("#profile").submit(function (e) {
@@ -68,32 +69,15 @@
           value: "{{csrf_token}}"
         });
         
-        $ajax = $.ajax({
-          type: "post",
+        $.densan.ajax({
           url: "/profile/save",
-          dataType: "json",
-          data: data
-        });
-        $ajax.done(function (res) {
-          if (res.message === "OK") {
+          data: data,
+          done: function () {
             alert("保存されました。");
-            return location.reload(true);
-          }
-          
-          alert("通信エラー");
-        });
-        $ajax.fail(function (xhr) {
-          var res = {};
-          try {
-            res = JSON.parse(xhr.responseText);
-          } catch (e) {
-            // JSON parse error
-            console.log(e);
-          } finally {
-            if (res.message !== "Error")
-              return alert("通信エラー");
-            
-            alert(res.errors.join("\n"));
+            location.reload(true);
+          },
+          fail: function (errors) {
+            alert(errors ? errors.join("\n") : "通信エラー");
           }
         });
       });
@@ -102,7 +86,7 @@
         $(this).val($(this).attr("data-value"));
       }).dropkick();
       
-      $teams = $("#teams");
+      var $teams = $("#teams");
       
       $("#add-team").click(function () {
         var $picker = $teams.find("div.team-picker:last"),
