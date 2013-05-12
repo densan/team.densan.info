@@ -12,7 +12,6 @@ module.exports = function (context) {
     res.locals({
       root: res.locals,
       error: req.flash("error"),
-      profile: null,
       title: "Profile",
       template: "profile",
       teams: [],
@@ -26,14 +25,7 @@ module.exports = function (context) {
         console.log(err);
 
       res.locals.teams = teams;
-
-      model.User.getProfileList(req.user.id, function (err, user_profiles) {
-        if (err)
-          console.log(err);
-
-        res.locals.profile = user_profiles[0];
-        res.render(res.locals.template);
-      });
+      res.render(res.locals.template);
     });
   });
 

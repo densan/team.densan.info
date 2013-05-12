@@ -50,36 +50,50 @@ module.exports = function (mongoose, db, Validator) {
     }
   });
 
+  var userDataReMap = function (profile) {
+    profile = JSON.parse(JSON.stringify(profile));
+
+    profile.team = profile.team.map(function (team) {
+      return team.name;
+    }).sort();
+    profile.role = {
+      name: profile.role.name,
+      permission: profile.role.permission
+    };
+
+    return profile;
+  };
+
+  /**
+   * User.getProfileList(Function)                => callback(err, Array<Object>)
+   *     .getProfileList(String, Function)        => callback(err, Object)
+   *     .getProfileList(Array<String>, Function) => callback(err, Array<Object>)
+   */
   UserSchema.statics.getProfileList = function (id, callback) {
     if (typeof id === "function")
       callback = id;
 
-    var query = this.find();
+    var query;
     if (typeof id === "string")
-      query = query.or([{id: id}]);
-    else if (typeof id === "object")
-      query = query.or(id.map(function (id) {
-        return {id: id};
-      }));
+      query = this.findOne({id: id});
+    else {
+      query = this.find();
+      if (typeof id === "object")
+        query = query.or(id.map(function (id) {
+          return {id: id};
+        }));
+    }
 
     query = query.populate("team").populate("role");
     query.exec(function (err, profiles) {
       if (err)
-        return callback(err, []);
+        return callback(err);
 
-      profiles = profiles.map(function (profile) {
-        profile = JSON.parse(JSON.stringify(profile));
+      if (profiles instanceof Array)
+        profiles = profiles.map(userDataReMap);
+      else if (profiles !== null)
+        profiles = userDataReMap(profiles);
 
-        profile.team = profile.team.map(function (team) {
-          return team.name;
-        }).sort();
-        profile.role = {
-          name: profile.role.name,
-          permission: profile.role.permission
-        };
-
-        return profile;
-      });
       callback(err, profiles);
     });
 

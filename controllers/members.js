@@ -12,7 +12,6 @@ module.exports = function (context) {
     res.locals({
       root: res.locals,
       error: req.flash("error"),
-      profile: null,
       title: "Members",
       template: "members",
       teams: [],
@@ -47,7 +46,6 @@ module.exports = function (context) {
     res.locals({
       root: res.locals,
       error: req.flash("error"),
-      profile: null,
       title: "Members",
       template: "members",
       teams: [],

@@ -58,7 +58,7 @@ module.exports = function (context) {
 
             console.log(user_profiles);
 
-            if (user_profiles.length === 0) {
+            if (user_profiles === null) {
               req.logout();
               return res.redirect("/");
             }
@@ -67,7 +67,8 @@ module.exports = function (context) {
               if (err)
                 console.log(err);
 
-              res.locals.profile = user_profiles[0];
+              // sync profile data
+              res.locals.profile = user_profiles;
 
               res.locals.teams = teams;
               res.locals.title = "Home";
@@ -97,6 +98,9 @@ module.exports = function (context) {
 
           if (user_profiles.length === 0)
             return res.redirect("/");
+
+          // sync profile data
+          res.locals.profile = user_profiles;
 
           next();
         });
