@@ -14,7 +14,6 @@ module.exports = function (context) {
       error: req.flash("error"),
       title: "Members",
       template: "members",
-      teams: [],
       members: [],
       team: "All"
     });
@@ -31,14 +30,7 @@ module.exports = function (context) {
         };
       });
       res.locals.members = users;
-
-      model.Team.getNameList(function (err, teams) {
-        if (err)
-          console.log(err);
-
-        res.locals.teams = teams;
-        res.render(res.locals.template);
-      });
+      res.render(res.locals.template);
     });
   });
 
@@ -48,7 +40,6 @@ module.exports = function (context) {
       error: req.flash("error"),
       title: "Members",
       template: "members",
-      teams: [],
       members: [],
       team: req.params.team
     });
@@ -63,10 +54,6 @@ module.exports = function (context) {
 
       if (i === l)
         return res.json(404, {error: "page not found"});
-
-      res.locals.teams = teams.map(function (teams) {
-        return teams.name;
-      }).sort();
 
       model.User
         .find({team: teams[i]._id})

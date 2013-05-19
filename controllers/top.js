@@ -3,7 +3,8 @@
  */
 
 var fs = require("fs"),
-    path = require("path");
+    path = require("path"),
+    Flow = require("async-flow");
 
 var ignoreList = [];
 fs.readdir(path.join(__dirname, "../static"), function (err, files) {
@@ -92,16 +93,28 @@ module.exports = function (context) {
         req.flash("redirect", req.originalUrl);
         return res.redirect("/auth");
       } else {
-        model.User.getProfileList(req.user.id, function (err, user_profiles) {
-          if (err)
-            console.log(err);
+        Flow.create(Flow.create().flow(function (done) {
+          model.User.getProfileList(req.user.id, function (err, user_profiles) {
+            if (err)
+              console.log(err);
 
-          if (user_profiles.length === 0)
-            return res.redirect("/");
+            if (user_profiles === null)
+              return res.redirect("/");
 
-          // sync profile data
-          res.locals.profile = user_profiles;
+            // sync profile data
+            res.locals.profile = user_profiles;
+            done();
+          });
+        }), Flow.create().flow(function (done) {
+          model.Team.getNameList(function (err, teams) {
+            if (err)
+              console.log(err);
 
+            // sync teams data
+            res.locals.teams = teams;
+            done();
+          });
+        })).flow(function () {
           next();
         });
         return false;

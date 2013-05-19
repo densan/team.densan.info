@@ -14,7 +14,6 @@ module.exports = function (context) {
       error: req.flash("error"),
       title: "Admin",
       template: "admin",
-      teams: [],
       members: []
     });
 
@@ -22,12 +21,6 @@ module.exports = function (context) {
     if (req.user.role)
       console.log(req.user.role.permission);
 
-    model.Team.getNameList(function (err, teams) {
-      if (err)
-        console.log(err);
-
-      res.locals.teams = teams;
-      res.render(res.locals.template);
-    });
+    res.render(res.locals.template);
   });
 };

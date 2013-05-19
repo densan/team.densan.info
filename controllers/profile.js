@@ -14,19 +14,12 @@ module.exports = function (context) {
       error: req.flash("error"),
       title: "Profile",
       template: "profile",
-      teams: [],
       index: function () {
         return res.locals.profile.team.indexOf(this.valueOf());
       }
     });
 
-    model.Team.getNameList(function (err, teams) {
-      if (err)
-        console.log(err);
-
-      res.locals.teams = teams;
-      res.render(res.locals.template);
-    });
+    res.render(res.locals.template);
   });
 
   router.post(2, "/profile/save", function (req, res) {
