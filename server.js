@@ -65,7 +65,7 @@ app.configure(function () {
   app.use(express.static(path.join(__dirname, "static")));
 });
 
-app.configure("development", function () {
+app.configure("development", "maintenance", function () {
   app.use(express.logger("dev"));
   app.use(express.errorHandler());
 });
