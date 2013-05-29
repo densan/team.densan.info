@@ -38,7 +38,7 @@ module.exports = function (context) {
     res.locals({
       root: res.locals,
       error: req.flash("error"),
-      title: "Members",
+      title: req.params.team + " - Members",
       template: "members",
       members: [],
       team: req.params.team
