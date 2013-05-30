@@ -7,7 +7,8 @@ var mode = process.argv[2] || "production",
     pass = process.argv[3] || null;
 
 switch (mode) {
-  case "maintenance":
+  case "maintenance-dev":
+  case "maintenance-pro":
     if (pass === null)
       throw new Error("maintenance pass is required.");
   case "development":

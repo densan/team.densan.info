@@ -65,12 +65,12 @@ app.configure(function () {
   app.use(express.static(path.join(__dirname, "static")));
 });
 
-app.configure("development", "maintenance", function () {
+app.configure("development", "maintenance-dev", function () {
   app.use(express.logger("dev"));
   app.use(express.errorHandler());
 });
 
-app.configure("production", function () {
+app.configure("production", "maintenance-pro", function () {
   if (process.env.VCAP_APP_PORT)
     app.set("port", process.env.VCAP_APP_PORT);
   else
