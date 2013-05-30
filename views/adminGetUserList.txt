@@ -1,0 +1,2 @@
+id, name, email, team{{#members}}
+{{id}}, {{#name}}{{last}} {{first}}{{/name}}, {{email}},{{#team}} {{.}}{{/team}}{{/members}}
