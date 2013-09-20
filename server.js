@@ -74,7 +74,7 @@ app.configure("production", "maintenance-pro", function () {
   if (process.env.VCAP_APP_PORT)
     app.set("port", process.env.VCAP_APP_PORT);
   else
-    app.set("port", 61312);
+    app.set("port", 61030);
 
   if (process.env.VCAP_SERVICES) {
     var services = JSON.parse(process.env.VCAP_SERVICES);
