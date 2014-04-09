@@ -9,7 +9,7 @@ module.exports = function (mongoose, db) {
       index: {unique: true},
       required: true
     },
-    permission: {
+    permissions: {
       type: [String],
       required: true,
       "default": ["login"]

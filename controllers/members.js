@@ -71,7 +71,7 @@ module.exports = function (context) {
               }).sort(),
               role: {
                 name: user.role.name,
-                permission: user.role.permission
+                permissions: user.role.permissions
               }
             };
           });

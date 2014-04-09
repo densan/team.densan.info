@@ -58,7 +58,7 @@ module.exports = function (mongoose, db, Validator) {
     }).sort();
     profile.role = {
       name: profile.role.name,
-      permission: profile.role.permission
+      permissions: profile.role.permissions
     };
 
     return profile;
