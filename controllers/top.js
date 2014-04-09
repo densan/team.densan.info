@@ -69,7 +69,7 @@ module.exports = function (context) {
                 console.log(err);
 
               // sync profile data
-              res.locals.profile = user_profiles;
+              res.locals.profile = req.user = user_profiles;
 
               res.locals.teams = teams;
               res.locals.title = "Home";
@@ -102,7 +102,7 @@ module.exports = function (context) {
               return res.redirect("/");
 
             // sync profile data
-            res.locals.profile = user_profiles;
+            res.locals.profile = req.user = user_profiles;
             done();
           });
         }), Flow.create().flow(function (done) {
