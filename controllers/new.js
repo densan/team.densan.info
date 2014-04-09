@@ -19,6 +19,14 @@ module.exports = function (context) {
     if (req.user.status !== "new")
       return res.json(403, {message: "Forbidden"});
 
+    // get user team
+    req.user.team = req.body.team ? req.body.team : [];
+    if (typeof req.user.team === "string")
+      req.user.team = [req.body.team];
+    // check team list
+    if (req.user.team.length === 0)
+      return res.json(400, {message: "Error", errors: ["チームを一つ以上選択してください"]});
+
     model.Team.getNameList(function (err, teams) {
       if (err)
         console.log(err);
@@ -30,11 +38,6 @@ module.exports = function (context) {
           console.log(err);
 
         req.user.role = role;
-
-        req.user.team = [];
-        var team = req.body.team0;
-        for (var i = 0; team; team = req.body["team" + (++i)])
-          req.user.team[i] = team;
 
         var queries = req.user.team.map(function (team) {
           return {name: team};

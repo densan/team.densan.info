@@ -37,19 +37,18 @@
               <label class="control-label" for="team">Team</label>
               <div class="controls">
                 <div style="width:206px" data-toggle="tooltip" data-placement="top" title="所属しているチームを選択してください。">
-                  <select name="team0" class="form-item">
+                  <select id="team-picker" name="team" class="form-item select-block" multiple>
                     {{#teams}}
                     <option value="{{.}}">{{.}}</option>
                     {{/teams}}
                   </select>
-                  <button id="add-team" class="btn btn-large btn-block fui-plus-16" type="button">&nbsp;Add Team</button>
                 </div>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="email">Email</label>
               <div class="controls">
-                <input id="email" name="email" class="form-item" type="email" placeholder="required" required data-toggle="tooltip" data-placement="top" title="学校のメールアドレスとは別に連絡の取れるメールアドレスを登録してください。">
+                <input id="email" name="email" style="height: 21px;" class="form-item" type="email" placeholder="required" required data-toggle="tooltip" data-placement="top" title="学校のメールアドレスとは別に連絡の取れるメールアドレスを登録してください。">
               </div>
             </div>
             <div class="control-group">
@@ -59,7 +58,7 @@
             </div>
             <div class="control-group">
               <div class="controls">
-                <a href="/logout" class="btn btn-large btn-block btn-danger form-item">中断してログアウト</a>
+                <a href="/logout" class="btn btn-large btn-block btn-danger form-item">中断</a>
               </div>
             </div>
           </form>
@@ -72,11 +71,11 @@
   {{>footer}}
   <script type="text/javascript" src="/js/libs/jquery.js"></script>
   <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
-  <script type="text/javascript" src="/js/libs/jquery.dropkick-1.0.0.js"></script>
+  <script type="text/javascript" src="/js/libs/bootstrap-select.js"></script>
   <script type="text/javascript" src="/js/ajax.js"></script>
   <script type="text/javascript">
     $(function () {
-      $("select").dropkick();
+      $("#team-picker").selectpicker({style: "btn-primary", menuStyle: "dropdown-inverse"});
       $("[data-toggle=tooltip]").tooltip({trigger: "hover"});
       $("#sign_up").submit(function (e) {
         e.preventDefault();
@@ -97,15 +96,6 @@
             alert(errors ? errors.join("\n") : "通信エラー");
           }
         });
-      });
-      $("#add-team").click(function () {
-        var $select = $(this).parent().find("select:last"),
-            $new = $select.clone(),
-            index = Number($new.attr("name").slice(4)) + 1;
-        
-        $new.attr("name", "team" + index);
-        $select.after($new);
-        $new.dropkick();
       });
     });
   </script>

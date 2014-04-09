@@ -34,17 +34,13 @@
         <dl class="list">
           <dt>Team:</dt>
           <dd id="teams">
-              {{#team}}
-              <div class="team-picker">
-                <select name="team{{index}}" class="form-item" data-value="{{.}}">
-                  {{#teams}}
-                  <option value="{{.}}">{{.}}</option>
-                  {{/teams}}
-                </select>
-                <button class="delete btn fui-cross-16" type="button"></button>
-              </div>
-              {{/team}}
-              <button id="add-team" class="team-picker btn btn-large btn-block fui-plus-16" type="button">&nbsp;Add Team</button>
+            <div class="team-picker">
+              <select id="team-picker" name="team" class="form-item select-block" multiple>
+                {{#teams}}
+                <option value="{{.}}">{{.}}</option>
+                {{/teams}}
+              </select>
+            </div>
           </dd>
         </dl>
         <button type="submit" class="btn btn-primary">Save</button>
@@ -56,7 +52,7 @@
   {{>footer}}
   <script type="text/javascript" src="/js/libs/jquery.js"></script>
   <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
-  <script type="text/javascript" src="/js/libs/jquery.dropkick-1.0.0.js"></script>
+  <script type="text/javascript" src="/js/libs/bootstrap-select.js"></script>
   <script type="text/javascript" src="/js/ajax.js"></script>
   <script type="text/javascript">
     $(function () {
@@ -82,25 +78,13 @@
         });
       });
       
-      $("select[data-value]").each(function () {
-        $(this).val($(this).attr("data-value"));
-      }).dropkick();
+      var $teamPicker = $("#team-picker"),
+          team = "{{profile.team}}".split(",");
+      $teamPicker
+        .selectpicker({style: "btn-primary", menuStyle: "dropdown-inverse"})
+        .selectpicker("val", team);
       
-      var $teams = $("#teams");
-      
-      $("#add-team").click(function () {
-        var $picker = $teams.find("div.team-picker:last"),
-            $new = $picker.clone(),
-            $select = $new.find("select"),
-            index = Number($select.attr("name").slice(4)) + 1;
-        
-        $select.attr("name", "team" + index);
-        $picker.after($new);
-        $new.find("div.dk_container").remove();
-        $select.dropkick();
-      });
-      
-      $teams.on("click", "button.delete", function () {
+      $("#teams").on("click", "button.delete", function () {
         $(this).parent().remove();
       });
     });

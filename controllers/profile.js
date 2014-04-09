@@ -31,11 +31,14 @@ module.exports = function (context) {
     if (! req.user)
       return res.json(401, {message: "Unauthorized"});
 
-    req.user.team = [];
-    Object.keys(req.body).map(function (key) {
-      if (key.slice(0, 4) === "team")
-        req.user.team.push(req.body[key]);
-    });
+    // get user list
+    req.user.team = req.body.team ? req.body.team : [];
+    if (typeof req.user.team === "string")
+      req.user.team = [req.body.team];
+    // check team list
+    if (req.user.team.length === 0)
+      return res.json(400, {message: "Error", errors: ["チームを一つ以上選択してください"]});
+
     var queries = req.user.team.map(function (team) {
       return {name: team};
     });
