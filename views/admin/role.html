@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{>head}}
+</head>
+<body>
+  <div id="wrap">
+    {{>menu}}
+    
+    <div class="container">
+      {{>error}}
+      
+      <h1>densan.info - Administration Control Panel</h1>
+      <p>Manage Role</p>
+      <p>Your Role: "{{profile.role.name}}"</p>
+      <hr>
+      <div id="roles" class="tabbable tabs-left">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#test" data-toggle="tab">Role Name</a></li>
+          {{#roles}}
+          <li>
+            <a href="#{{name}}" data-toggle="tab">{{name}}</a>
+          </li>
+          {{/roles}}
+        </ul>
+        <div class="tab-content">
+          <section id="test" class="tab-pane active">
+            Note: 左のタブが Role 名、右側 (この部分) の内容が Permission 一覧になります。
+          </section>
+          {{#roles}}
+          <section id="{{name}}" class="tab-pane">
+            <p>Permission:</p>
+            <input name="tagsinput" id="tagsinput" class="tagsinput" value="{{#permission}}{{.}},{{/permission}}">
+          </section>
+          {{/roles}}
+        </div>
+      </div>
+      <div>
+        <button id="add-role" class="btn btn-inverse">Add Role</button>
+      </div>
+    </div>
+  </div>
+  
+  {{>footer}}
+  <script type="text/javascript" src="/js/libs/jquery.js"></script>
+  <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
+  <script type="text/javascript" src="/js/libs/jquery.tagsinput.js"></script>
+  <script type="text/javascript">
+    var $roles = $("#roles"),
+        $addRole = $("#add-role");
+    
+    var $tagsInput = $(".tagsinput");
+    $tagsInput.tagsInput();
+    
+    $addRole.click(function () {
+      var $tab = $roles.find("ul.nav-tabs")
+            .append('<li><a data-toggle="tab"></a></li>')
+            .find("li:last > a"),
+          $content = $roles.find("div.tab-content")
+            .append('<section class="tab-pane"></section>')
+            .find("section:last");
+      
+      $tab.text("tab name");
+      $content.text("content");
+    });
+  </script>
+</body>
+</html>

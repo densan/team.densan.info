@@ -8,6 +8,22 @@ module.exports = function (context) {
       model = context.model,
       Validator = context.Validator;
 
+  router.all(2, "/members*", function (req, res, next) {
+    var maintenance = req.body && req.query.pass === process.env.MAINTENANCE_PASS;
+    res.locals.maintenance = maintenance;
+    model.Role.find(function (err, roles) {
+      if (err)
+        console.error(err);
+
+      res.locals.roles = roles.map(function (role) {
+        return role.name;
+      });
+      res.locals.roles = ["admin", "member", "staff"];
+
+      next();
+    });
+  });
+
   router.get(2, "/members", function (req, res) {
     res.locals({
       root: res.locals,
@@ -26,12 +42,24 @@ module.exports = function (context) {
         return {
           name: user.name,
           team: user.team,
-          role: user.role
+          role: user.role.name,
+          selected: function () {
+            return String(this) === user.role.name;
+          }
         };
       });
       res.locals.members = users;
       res.render(res.locals.template);
     });
+  });
+
+  router.post(2, "/members/:user_id", function (req, res) {
+    if (! req.xhr)
+      return res.send(400);
+
+    console.log("chenge user data - not implemented");
+
+    res.send(200);
   });
 
   router.get(2, "/members/:team", function (req, res) {
@@ -68,13 +96,14 @@ module.exports = function (context) {
               name: user.name,
               team: user.team.map(function (team) {
                 return team.name;
-              }).sort(),
-              role: {
-                name: user.role.name,
-                permissions: user.role.permissions
+              }),
+              role: user.role.name,
+              selected: function () {
+                return String(this) === user.role.name;
               }
             };
           });
+
           res.render(res.locals.template);
         });
     });
