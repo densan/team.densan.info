@@ -58,10 +58,11 @@ module.exports = function (context) {
             user.save(function (err) {
               if (err) {
                 var errs = [];
-                if (err.errors)
+                if (err.errors) {
                   for (var error in err.errors)
-                    errs.push(err.errors[error].type);
-                else if (err.err)
+                    if (err.errors.hasOwnProperty(error))
+                      errs.push(err.errors[error].type);
+                } else if (err.err)
                   errs.push("次の情報を管理者へお伝え下さい", "DB Error: " + err.err);
                 else
                   errs.push("次の情報を管理者へお伝え下さい", "DB Error: Unknown");

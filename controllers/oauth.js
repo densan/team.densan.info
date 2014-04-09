@@ -35,15 +35,15 @@ module.exports = function (context) {
     // check HIT Student
     var is_HIT_student = profile.emails.some(function (item) {
       var email = item.value;
-      var is_HIT_email = email.slice(-10) === ".hit.ac.jp";
+      var is_HIT_email = email.slice(-10) === ".hus.ac.jp";
       if (is_HIT_email)
-        user.id = email.slice(0, -18);
+        user.id = email.split("@")[0];
       return is_HIT_email;
     });
 
     if (! is_HIT_student) {
       user.status = "ng";
-      req.flash("error", {message: "HIT のメールアドレスで再度ログインしてください。　<a href='https://accounts.google.com/AddSession' target='_blank' data-toggle='tooltip' data-placement='bottom' title='このリンクから Google アカウントを追加し、再度ログインボタンを押してください。'>別のアカウントでログインするには</a>"});
+      req.flash("error", {message: "HUS のメールアドレスで再度ログインしてください。　<a href='https://accounts.google.com/AddSession' target='_blank' data-toggle='tooltip' data-placement='bottom' title='このリンクから Google アカウントを追加し、再度ログインボタンを押してください。'>別のアカウントでログインするには</a>"});
       done(null, user);
     } else {
       // id exist check

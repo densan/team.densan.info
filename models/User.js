@@ -29,7 +29,7 @@ module.exports = function (mongoose, db, Validator) {
 
         var valid = new Validator();
         valid.check(value).isEmail();
-        valid.check(value.slice(-10)).not(".hit.ac.jp");
+        valid.check(value.slice(-10)).not(".hus.ac.jp");
 
         return valid.getErrors().length === 0;
       }, "不正なメールアドレスです"]
