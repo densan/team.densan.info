@@ -12,6 +12,12 @@ var express = require("express"),
 
 // express server settings
 var app = express();
+
+app.configure("development", "maintenance-dev", function () {
+  app.use(express.logger("dev"));
+  app.use(express.errorHandler());
+});
+
 app.configure(function () {
   app.set("port", 3000);
   app.set("mongo", {
@@ -65,11 +71,6 @@ app.configure(function () {
   app.use(express.static(path.join(__dirname, "static")));
 });
 
-app.configure("development", "maintenance-dev", function () {
-  app.use(express.logger("dev"));
-  app.use(express.errorHandler());
-});
-
 app.configure("production", "maintenance-pro", function () {
   if (process.env.VCAP_APP_PORT)
     app.set("port", process.env.VCAP_APP_PORT);
@@ -78,8 +79,8 @@ app.configure("production", "maintenance-pro", function () {
 
   if (process.env.VCAP_SERVICES) {
     var services = JSON.parse(process.env.VCAP_SERVICES);
-    if (services['mongodb-1.8'][0].credentials)
-      app.set("mongo", services['mongodb-1.8'][0].credentials);
+    if (services["mongodb-1.8"][0].credentials)
+      app.set("mongo", services["mongodb-1.8"][0].credentials);
 
     app.set("auth", {
       returnURL: "http://densan.hp.af.cm/auth/callback",
