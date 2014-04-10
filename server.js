@@ -37,8 +37,8 @@ app.configure(function () {
   });
   app.locals({
     menu: function (title) {
-      var active = title === this.title ? "active" : "";
-      return active;
+      var current_title = this.title.split("-").slice(-1)[0].trim();
+      return title === current_title ? "active" : "";
     }
   });
   app.set("views", path.join(__dirname, "views"));
