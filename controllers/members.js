@@ -18,7 +18,6 @@ module.exports = function (context) {
       res.locals.roles = roles.map(function (role) {
         return role.name;
       });
-      res.locals.roles = ["admin", "member", "staff"];
 
       next();
     });
