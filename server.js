@@ -7,8 +7,13 @@ var express = require("express"),
     flash = require("connect-flash"),
     hogan = require("hogan-express"),
     passport = require("passport"),
+    yaml = require("js-yaml"),
     http = require("http"),
-    path = require("path");
+    path = require("path"),
+    fs = require("fs");
+
+// load settings
+var config = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, "config.yml"), "utf8"));
 
 // express server settings
 var app = express();
@@ -21,12 +26,11 @@ app.configure("development", "maintenance-dev", function () {
 app.configure(function () {
   app.set("port", 3000);
   app.set("mongo", {
-    hostname: "localhost",
-    port: 27017,
-    username: "",
-    password: "",
-    name: "",
-    db: "densan"
+    hostname: config.db.host,
+    port: config.db.port,
+    username: config.db.user,
+    password: config.db.pass,
+    db: config.db.name
   });
   app.set("auth", {
     returnURL: "http://localhost:3000/auth/callback",
