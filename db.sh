@@ -1,1 +1,1 @@
-mongod --fork --dbpath db --logpath db/mongodb.log
+mongod -f db/mongod.conf

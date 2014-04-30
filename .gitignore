@@ -4,6 +4,7 @@
 node_modules
 *.log
 
-db
 config.yml
+db/*
+!db/mongod.conf
 Thumbs.db
