@@ -55,6 +55,7 @@ app.configure(function () {
   // startup token
   app.set("token", ~~(Math.random() * Math.pow(10, 8)));
   app.engine("html", hogan);
+  app.use(express.static(path.join(__dirname, "static")));
   app.use(express.cookieParser("secaccerss:c"));
   app.use(express.bodyParser());
   app.use(express.cookieSession({
@@ -72,7 +73,6 @@ app.configure(function () {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, "static")));
 });
 
 app.configure("production", "maintenance-pro", function () {
