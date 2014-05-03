@@ -72,7 +72,7 @@ module.exports = function (context) {
 
           req.user.status = "ok";
 
-          res.json({message: "OK"});
+          res.json({status: "ok"});
         });
       });
     });

@@ -74,7 +74,7 @@ module.exports = function (context) {
               req.session.status = null;
               req.session.passport.user = user.id;
 
-              res.json({message: "OK"});
+              res.json({status: "ok"});
             });
           });
       });
