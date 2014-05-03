@@ -14,17 +14,19 @@ module.exports = function (context) {
       return res.json(400, {message: "Bad Request"});
 
     // check logged in
-    if (! req.user)
+    if (! req.session.profile)
       return res.json(401, {message: "Unauthorized"});
-    if (req.user.status !== "new")
+    if (req.session.status !== "new")
       return res.json(403, {message: "Forbidden"});
 
-    // get user team
-    req.user.team = req.body.team ? req.body.team : [];
-    if (typeof req.user.team === "string")
-      req.user.team = [req.body.team];
-    // check team list
-    if (req.user.team.length === 0)
+    var user = JSON.parse(JSON.stringify(req.session.profile));
+    user.email = req.body.email;
+    user.team = req.body.team || [];
+
+    // check team property
+    if (typeof user.team === "string")
+      user.team = [req.body.team];
+    if (user.team.length === 0)
       return res.json(400, {message: "Error", errors: ["チームを一つ以上選択してください"]});
 
     model.Team.getNameList(function (err, teams) {
@@ -37,9 +39,9 @@ module.exports = function (context) {
         if (err)
           console.log(err);
 
-        req.user.role = role;
+        user.role = role;
 
-        var queries = req.user.team.map(function (team) {
+        var queries = user.team.map(function (team) {
           return {name: team};
         });
 
@@ -50,11 +52,9 @@ module.exports = function (context) {
             if (err)
               console.log(err);
 
-            req.user.team = team;
-            req.user.email = req.body.email;
-            req.user.timestamp = Date.now();
+            user.team = team;
 
-            var user = new model.User(req.user);
+            user = new model.User(user);
             user.save(function (err) {
               if (err) {
                 var errs = [];
@@ -71,7 +71,8 @@ module.exports = function (context) {
                 return console.log(err);
               }
 
-              req.user.status = "ok";
+              req.session.status = null;
+              req.session.passport.user = user.id;
 
               res.json({message: "OK"});
             });

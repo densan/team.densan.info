@@ -46,7 +46,8 @@ module.exports = function (mongoose, db, Validator) {
     },
     timestamp: {
       type: Date,
-      required: true
+      required: true,
+      "default": Date.now
     }
   });
 

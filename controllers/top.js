@@ -31,55 +31,45 @@ module.exports = function (context) {
 
     // check logged in
     if (req.user) {
-      if (req.user.status === "ng")
-        req.logout();
-      else {
-        var redirect = req.flash("redirect");
-        if (redirect.length > 0)
-          return res.redirect(redirect[0]);
+      // 認証後リダイレクト
+      var redirect = req.flash("redirect");
+      if (redirect.length > 0)
+        return res.redirect(redirect[0]);
 
-        if (req.user.status === "new") {
-          // 新規登録画面
-          res.locals.title = "New Account";
-          res.locals.template = "new";
-          res.locals.profile = req.user;
-          model.Team.getNameList(function (err, teams) {
-            if (err)
-              console.log(err);
+      res.locals.profile = req.user;
+      res.locals.title = "Home";
+      res.locals.template = "home";
 
-            res.locals.teams = teams;
-            res.render(res.locals.template);
-          });
-          return false;
-        } else {
-          // ログイン後画面
-          model.User.getProfileList(req.user.id, function (err, user_profiles) {
-            if (err)
-              console.log(err);
+      model.Team.getNameList(function (err, teams) {
+        if (err)
+          console.log(err);
 
-            console.log(user_profiles);
+        res.locals.teams = teams;
+        res.render(res.locals.template);
+      });
 
-            if (user_profiles === null) {
-              req.logout();
-              return res.redirect("/");
-            }
+      return false;
+    }
 
-            model.Team.getNameList(function (err, teams) {
-              if (err)
-                console.log(err);
+    if (req.session.status === "ng") {
+      // auth failed
+      req.logout();
+      req.session.destroy && req.session.destroy();
+      req.session = null;
+    } else if (req.session.status === "new") {
+      // registration page
+      res.locals.title = "New Account";
+      res.locals.template = "new";
+      res.locals.profile = req.session.profile;
+      model.Team.getNameList(function (err, teams) {
+        if (err)
+          console.log(err);
 
-              // sync profile data
-              res.locals.profile = req.user = user_profiles;
+        res.locals.teams = teams;
+        res.render(res.locals.template);
+      });
 
-              res.locals.teams = teams;
-              res.locals.title = "Home";
-              res.locals.template = "home";
-              res.render(res.locals.template);
-            });
-          });
-          return false;
-        }
-      }
+      return false;
     }
 
     res.render(res.locals.template);
@@ -87,39 +77,25 @@ module.exports = function (context) {
 
   // check logged in
   router.get(1, "/:page*", function (req, res, next) {
-    if (!~ ignoreList.indexOf(req.params.page))
+    if (!~ ignoreList.indexOf(req.params.page)) {
       if (! req.user) {
         req.flash("redirect");
         req.flash("redirect", req.originalUrl);
-        return res.redirect("/auth");
+        res.redirect("/auth");
       } else {
-        Flow.create(Flow.create().flow(function (done) {
-          model.User.getProfileList(req.user.id, function (err, user_profiles) {
-            if (err)
-              console.log(err);
+        res.locals.profile = req.user;
 
-            if (user_profiles === null)
-              return res.redirect("/");
+        model.Team.getNameList(function (err, teams) {
+          if (err)
+            console.log(err);
 
-            // sync profile data
-            res.locals.profile = req.user = user_profiles;
-            done();
-          });
-        }), Flow.create().flow(function (done) {
-          model.Team.getNameList(function (err, teams) {
-            if (err)
-              console.log(err);
-
-            // sync teams data
-            res.locals.teams = teams;
-            done();
-          });
-        })).flow(function () {
+          // sync teams data
+          res.locals.teams = teams;
           next();
         });
-        return false;
       }
-
-    next();
+    } else {
+      next();
+    }
   });
 };
