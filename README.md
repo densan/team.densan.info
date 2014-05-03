@@ -1,12 +1,12 @@
 team.densan.info
 ================
 
-北海道工業大学 電子計算機研究部 部員専用サイト
+北海道科学大学 電子計算機研究部 部員専用サイト
 
 Requirements
 ------------
 * [Node.js v0.10](http://nodejs.jp/nodejs.org_ja/docs/v0.10/)
-* [MongoDB v2.4](http://www.mongodb.org/downloads/)
+* [MongoDB v2.6](http://www.mongodb.org/downloads/)
 
 Startup
 -------
