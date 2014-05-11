@@ -8,7 +8,7 @@
     "passport": "~0.1.16",
     "passport-google": "~0.3.0",
     "validator": "~0.4.28",
-    "mongoose": "~3.6.4",
+    "mongoose": "~3.8.9",
     "async-flow": "~0.3.0",
     "hogan.js": "~2.0.0",
     "js-yaml": "^3.0.2"
