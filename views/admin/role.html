@@ -7,62 +7,147 @@
   <div id="wrap">
     {{>menu}}
     
-    <div class="container">
+    <div id="container" class="container">
       {{>error}}
       
-      <h1>densan.info - Administration Control Panel</h1>
+      <h1>team.densan.info - Control Panel</h1>
       <p>Manage Role</p>
       <p>Your Role: "{{profile.role.name}}"</p>
       <hr>
-      <div id="roles" class="tabbable tabs-left">
-        <ul class="nav nav-tabs">
-          <li class="active"><a href="#test" data-toggle="tab">Role Name</a></li>
-          {{#roles}}
+      <div class="tabbable tabs-left">
+        <ul id="tabs" class="nav nav-tabs">
+          <li class="active"><a href="#desc" data-toggle="tab">Role Name</a></li>
+          <!-- ko foreach: roles -->
           <li>
-            <a href="#{{name}}" data-toggle="tab">{{name}}</a>
+            <a data-toggle="tab" data-bind="text: name, attr: {href: url}"></a>
+            <button type="button" class="close" data-bind="click: remove">&times;</button>
           </li>
-          {{/roles}}
+          <!-- /ko -->
         </ul>
         <div class="tab-content">
-          <section id="test" class="tab-pane active">
+          <section id="desc" class="tab-pane active">
             Note: 左のタブが Role 名、右側 (この部分) の内容が Permission 一覧になります。
           </section>
-          {{#roles}}
-          <section id="{{name}}" class="tab-pane">
-            <p>Permission:</p>
-            <input name="tagsinput" id="tagsinput" class="tagsinput" value="{{#permission}}{{.}},{{/permission}}">
+          <!-- ko foreach: roles -->
+          <section class="tab-pane" data-bind="attr: {id: name}">
+            <p>Permissions:</p>
+            <input class="tagsinput" data-bind="value: permissions_str">
           </section>
-          {{/roles}}
+          <!-- /ko -->
         </div>
       </div>
       <div>
-        <button id="add-role" class="btn btn-inverse">Add Role</button>
+        <button class="btn btn-inverse" data-bind="click: add">Add Role</button>
+        <button class="btn btn-info" data-bind="click: save">Save</button>
       </div>
     </div>
   </div>
   
   {{>footer}}
+  <script type="text/javascript" src="/js/libs/knockout.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.js"></script>
   <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.tagsinput.js"></script>
+  <script type="text/javascript" src="/js/ajax.js"></script>
   <script type="text/javascript">
-    var $roles = $("#roles"),
-        $addRole = $("#add-role");
-    
-    var $tagsInput = $(".tagsinput");
-    $tagsInput.tagsInput();
-    
-    $addRole.click(function () {
-      var $tab = $roles.find("ul.nav-tabs")
-            .append('<li><a data-toggle="tab"></a></li>')
-            .find("li:last > a"),
-          $content = $roles.find("div.tab-content")
-            .append('<section class="tab-pane"></section>')
-            .find("section:last");
-      
-      $tab.text("tab name");
-      $content.text("content");
+  $(function () {
+    // initial data
+    var init = {
+      roles: {{{roles}}}
+    };
+
+    // apply view model
+    ko.applyBindings(new RoleViewModel(init), $("#container").get(0));
+  });
+
+  function RoleModel(role) {
+    var that = this;
+    this._id = role._id;
+    this.name = ko.observable(role.name);
+    this.url = ko.computed(function () {
+      return "#" + that.name();
     });
+    this.permissions = ko.observableArray(role.permissions);
+    this.permissions_str = ko.computed({
+      read: function () {
+        return that.permissions().join(",");
+      },
+      write: function (value) {
+        this.permissions(value.split(","));
+      },
+      owner: this
+    });
+  }
+  RoleModel.prototype.remove = function () {
+    this.parent.roles.remove(this);
+    $("#tabs > li > a:first").click();
+  };
+  function RoleViewModel(opts) {
+    var that = this;
+    this.roles = ko.observableArray();
+    this.update(opts.roles);
+    // set parent
+    RoleModel.prototype.parent = this;
+  }
+  RoleViewModel.prototype.add = function () {
+    this.roles.push(new RoleModel({
+      name: "role-" + this.count++,
+      permissions: ["login"]
+    }));
+    // init tag UI
+    $(".tagsinput:last").tagsInput();
+  };
+  RoleViewModel.prototype.update = function (roles) {
+    this.roles(roles.map(function (role) {
+      return new RoleModel(role);
+    }));
+
+    var indexes = this.roles().map(function (role) {
+      var name = role.name();
+      if (name.slice(0, 5) === "role-") {
+        return parseInt(name.slice(5), 10);
+      } else {
+        return NaN;
+      }
+    }).filter(function (e) {
+      return e;
+    });
+    this.count = (indexes.length && Math.max.apply(Math, indexes)) + 1;
+
+    $("#tabs > li > a:first").click();
+    setTimeout(function () {
+      // tag UI
+      $(".tagsinput").tagsInput();
+    }, 0);
+  };
+  RoleViewModel.prototype.save = function () {
+    $(".tagsinput").change();
+    var roles = ko.toJS(this.roles).map(function (role) {
+      return {
+        _id: role._id,
+        name: role.name,
+        permissions: role.permissions
+      }
+    });
+
+    var data = {
+      _csrf: "{{csrf_token}}",
+      roles: roles
+    };
+
+    var instance = this;
+
+    $.densan.ajax({
+      data: data,
+      done: function (res) {
+        instance.update(res.roles);
+        alert("保存されました。");
+      },
+      fail: function (errors) {
+        alert(errors ? errors.join("\n") : "通信エラー");
+      }
+    });
+  };
   </script>
 </body>
 </html>

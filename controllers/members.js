@@ -9,8 +9,6 @@ module.exports = function (context) {
       Validator = context.Validator;
 
   router.all(2, "/members*", function (req, res, next) {
-    var maintenance = req.body && req.query.pass === process.env.MAINTENANCE_PASS;
-    res.locals.maintenance = maintenance;
     model.Role.find(function (err, roles) {
       if (err)
         console.error(err);

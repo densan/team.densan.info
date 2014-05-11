@@ -11,6 +11,14 @@
           {{/teams}}
           </ul>
         </li>
+        {{#admin}}
+        <li class="{{#menu}}Admin{{/menu}}">
+          <a href="/admin">Admin</a>
+          <ul>
+            <li><a href="/admin/role">Role</a></li>
+          </ul>
+        </li>
+        {{/admin}}
         <li class="{{#menu}}Profile{{/menu}}"><a href="/profile">Profile</a></li>
       </ul>
       <ul class="nav pull-right">

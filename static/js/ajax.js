@@ -18,7 +18,7 @@
 
     $ajax.done(function (res) {
       if (res.status === "ok")
-        return params.done && params.done();
+        return params.done && params.done(res);
       return params.fail && params.fail();
     });
 

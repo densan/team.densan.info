@@ -39,3 +39,14 @@ dl.list dd {
 a[data-toggle="tab"] {
   text-decoration: none;
 }
+
+.tabbable > ul > li > .close {
+  position: relative;
+  margin-top: -32px;
+  right: 5px;
+  height: ;
+  display: none;
+}
+.tabbable > ul > li:hover > .close {
+  display: block;
+}

@@ -55,6 +55,12 @@ module.exports = function (app, passport) {
     });
   }
 
+  // maintenance ctrl
+  router.all(0, "/*", function (req, res, next) {
+    res.locals.admin = req.body && req.query.pass === process.env.MAINTENANCE_PASS || ~ req.user.role.permissions.indexOf("admin");
+    next();
+  });
+
   var module = autoloader(__dirname, {
     app: app,
     router: router,

@@ -30,10 +30,11 @@
           <li>{{.}}</li>
         {{/team}}
         </ul>
-        {{^maintenance}}
-        <p>{{role}}</p>
-        {{/maintenance}}
-        {{#maintenance}}
+        {{^admin}}
+        <p>Role: {{role}}</p>
+        {{/admin}}
+        {{#admin}}
+        <p>Role:</p>
         <p>
           <select class="role-picker" name="team" class="form-item select-block">
             {{#roles}}
@@ -41,7 +42,7 @@
             {{/roles}}
           </select>
         </p>
-        {{/maintenance}}
+        {{/admin}}
         <hr>
       </div>
       {{/members}}

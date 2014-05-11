@@ -12,6 +12,15 @@ module.exports = function (context) {
       model = context.model,
       Validator = context.Validator;
 
+  // maintenance mode
+  router.all(2, "/admin*", function (req, res, next) {
+    // check permission
+    if (! res.locals.admin)
+      return res.json(401, {message: "Unauthorized"});
+
+    next();
+  });
+
   router.get(2, "/admin", function (req, res) {
     res.locals({
       root: res.locals,
@@ -20,23 +29,118 @@ module.exports = function (context) {
       template: "admin"
     });
 
-    // check permission
-    if (!~ [].indexOf.call(req.user.role, "control-panel"))
-      return res.json(400, {message: "Bad Request"});
-
     res.render(res.locals.template);
   });
 
-  router.get(2, "/admin/:pass/userlist.txt", function (req, res) {
+  router.get(2, "/admin/role", function (req, res) {
     res.locals({
       root: res.locals,
       error: req.flash("error"),
       title: "Role - Admin",
-      template: "adminGetUserList.txt"
+      template: "admin/role"
     });
 
-    if (req.params.pass !== process.env.MAINTENANCE_PASS)
+    model.Role.find(function (err, roles) {
+      if (err)
+        console.log(err);
+
+      res.locals.roles = JSON.stringify(roles);
+      res.render(res.locals.template);
+    });
+  });
+
+  router.post(2, "/admin/role", function (req, res) {
+    // check XHR
+    if (! req.xhr)
       return res.json(400, {message: "Bad Request"});
+
+    // check logged in
+    if (! req.user)
+      return res.json(401, {message: "Unauthorized"});
+
+    if (req.body.roles.length < 1)
+      return res.json(400, {message: "Roles must have least one role."});
+
+    model.Role.find({
+      name: {"$ne": "default"}
+    }, function (err, c_roles) {
+      if (err) {
+        console.log(err);
+        return res.json(500, {
+          message: "Database error.",
+          e: err
+        });
+      }
+
+      var roles = {},
+          n_roles = [];
+      req.body.roles.forEach(function (role) {
+        if (role._id) {
+          // array -> hash
+          roles[role._id] = role;
+        } else {
+          // filter new roles
+          n_roles.push(role);
+        }
+      });
+
+      var del_roles = [];
+      c_roles = c_roles.map(function (c_role) {
+        if (roles[c_role._id]) {
+          return roles[c_role._id];
+        } else {
+          del_roles.push(c_role);
+          return false;
+        }
+      }).filter(function (e) {
+        return e;
+      });
+
+      var promises = [];
+      // insert
+      if (n_roles.length > 0) {
+        promises.push(model.Role.create(n_roles));
+      }
+      // update
+      if (c_roles) {
+        [].push.apply(promises, c_roles.map(function (role) {
+          return model.Role.update({_id: role._id}, role).exec();
+        }));
+      }
+      // delete
+      if (del_roles.length > 0) {
+        promises.push(model.Role.find().or(del_roles).exec("remove"));
+      }
+
+      promises.reduce(function (p1, p2) {
+        return p1.then(function (roles) {
+          return p2;
+        });
+      }).then(function () {
+        // find all
+        return model.Role.find().exec();
+      }).then(function (roles) {
+        res.json({
+          status: "ok",
+          roles: roles
+        });
+      }).reject(function (err) {
+        console.log(err);
+        return res.json(500, {
+          message: "Database error.",
+          e: err
+        });
+      });
+    });
+  });
+
+  router.get(2, "/admin/userlist.txt", function (req, res) {
+    res.locals({
+      root: res.locals,
+      error: req.flash("error"),
+      title: "userlist",
+      template: "adminGetUserList.txt"
+    });
 
     // get user list
     model.User.getProfileList(function (err, users) {
@@ -53,6 +157,7 @@ module.exports = function (context) {
       fs.readFile(path.join(app.get("views"), res.locals.template), "utf8", function (err, data) {
         if (err)
           throw err;
+
         var userlist = hogan.compile(data).render({members: users});
         res.send(userlist);
       });
