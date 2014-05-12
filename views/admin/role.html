@@ -19,14 +19,15 @@
           <li class="active"><a href="#desc" data-toggle="tab">Role Name</a></li>
           <!-- ko foreach: roles -->
           <li>
-            <a data-toggle="tab" data-bind="text: name, attr: {href: url}"></a>
+            <a data-toggle="tab" data-bind="text: name, attr: {href: url}, event: {dblclick: edit}"></a>
             <button type="button" class="close" data-bind="click: remove">&times;</button>
           </li>
           <!-- /ko -->
         </ul>
         <div class="tab-content">
           <section id="desc" class="tab-pane active">
-            Note: 左のタブが Role 名、右側 (この部分) の内容が Permission 一覧になります。
+            <p>Note: 左のタブが Role 名、右側 (この部分) の内容が Permission 一覧になります。</p>
+            <p>タブをダブルクリックすると Role 名を変更できます。</p>
           </section>
           <!-- ko foreach: roles -->
           <section class="tab-pane" data-bind="attr: {id: name}">
@@ -81,6 +82,26 @@
   RoleModel.prototype.remove = function () {
     this.parent.roles.remove(this);
     $("#tabs > li > a:first").click();
+  };
+  RoleModel.prototype.edit = function (model, event) {
+    var $a = $(event.currentTarget);
+    // check already replaced
+    if ($a.find("input").length) {
+      return false;
+    }
+    // create input element and replace
+    var $input = $(document.createElement("input"));
+    $input.val($a.text())
+    .css({
+      width: $a.width(),
+      height: $a.height() - 6,
+      boxsizing: "border-box"
+    }).blur(function () {
+      $a.text($(this).val());
+      model.name($(this).val());
+    });
+    $a.html($input);
+    $input.focus();
   };
   function RoleViewModel(opts) {
     var that = this;

@@ -40,6 +40,9 @@ a[data-toggle="tab"] {
   text-decoration: none;
 }
 
+.tabbable > ul > li > a {
+  padding-right: 25px;
+}
 .tabbable > ul > li > .close {
   position: relative;
   margin-top: -32px;
