@@ -59,7 +59,7 @@ app.configure(function () {
   app.use(express.cookieParser("secaccerss:c"));
   app.use(express.bodyParser());
   app.use(express.cookieSession({
-    secret: "exkeyprepass8",
+    secret: config.session.secret,
     // expire after 1 week
     cookie: {maxAge: 1000 * 60 * 60 * 24 * 7}
   }));
