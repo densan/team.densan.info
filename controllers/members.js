@@ -143,7 +143,7 @@ module.exports = function (context) {
       return res.json(401, {message: "Unauthorized"});
 
     model.User
-      .findOne(req.params.user_id)
+      .findOne({id: req.params.user_id})
       .populate("team")
       .populate("role")
       .exec(function (err, user) {
