@@ -15,9 +15,7 @@
       <hr>
       {{#members}}
       <div>
-        {{#id}}
         <p>id: {{id}}</p>
-        {{/id}}
         {{#name}}
         <p>name: {{last}} {{first}}</p>
         {{/name}}
@@ -36,11 +34,12 @@
         {{#admin}}
         <p>Role:</p>
         <p>
-          <select class="role-picker" name="team" class="form-item select-block">
+          <select class="role-picker" name="team" class="form-item select-block" data-user-id="{{id}}">
             {{#roles}}
             <option value="{{.}}" {{#selected}}selected{{/selected}}>{{.}}</option>
             {{/roles}}
           </select>
+          <span class="saved">保存しました。</span>
         </p>
         {{/admin}}
         <hr>
@@ -58,6 +57,28 @@
     $(function () {
       var $rolePicker = $(".role-picker");
       $rolePicker.selectpicker({style: "btn-primary", menuStyle: "dropdown-inverse"});
+      $rolePicker.change(function () {
+        var $elem = $(this),
+            $saved = $elem.parent().find("span.saved"),
+            role = $elem.val(),
+            user_id = $elem.attr("data-user-id");
+
+        $.densan.ajax({
+          url: "/members/" + user_id + location.search,
+          data: {
+            _csrf: "{{csrf_token}}",
+            role: role
+          },
+          done: function () {
+            $saved.show()
+                  .delay(500)
+                  .fadeOut(500);
+          },
+          fail: function (errors) {
+            alert(errors ? errors.join("\n") : "通信エラー");
+          }
+        });
+      });
     });
   </script>
 </body>

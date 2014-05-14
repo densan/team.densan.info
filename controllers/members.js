@@ -10,8 +10,13 @@ module.exports = function (context) {
 
   router.all(2, "/members*", function (req, res, next) {
     model.Role.find(function (err, roles) {
-      if (err)
+      if (err) {
         console.error(err);
+        return res.json(500, {
+          message: "Database error.",
+          e: err
+        });
+      }
 
       res.locals.roles = roles.map(function (role) {
         return role.name;
@@ -32,11 +37,16 @@ module.exports = function (context) {
     });
 
     model.User.getProfileList(function (err, users) {
-      if (err)
-        console.log(err);
+      if (err) {
+        console.error(err);
+        return res.json(500, {
+          message: "Database error.",
+          e: err
+        });
+      }
 
-      users = users.map(function (user) {
-        return {
+      res.locals.members = users.map(function (user) {
+        var data = {
           id: user.id,
           name: user.name,
           team: user.team,
@@ -45,19 +55,17 @@ module.exports = function (context) {
             return String(this) === user.role.name;
           }
         };
+
+        // check email permission
+        if (~ req.user.role.permissions.indexOf("email")) {
+          data.email = user.email;
+        }
+
+        return data;
       });
-      res.locals.members = users;
+
       res.render(res.locals.template);
     });
-  });
-
-  router.post(2, "/members/:user_id", function (req, res) {
-    if (! req.xhr)
-      return res.send(400);
-
-    console.log("chenge user data - not implemented");
-
-    res.send(200);
   });
 
   router.get(2, "/members/:team", function (req, res) {
@@ -71,8 +79,13 @@ module.exports = function (context) {
     });
 
     model.Team.find(function (err, teams) {
-      if (err)
-        console.log(err);
+      if (err) {
+        console.error(err);
+        return res.json(500, {
+          message: "Database error.",
+          e: err
+        });
+      }
 
       for (var i = 0, l = teams.length; i < l; i++)
         if (req.params.team === teams[i].name)
@@ -86,11 +99,16 @@ module.exports = function (context) {
         .populate("team")
         .populate("role")
         .exec(function (err, users) {
-          if (err)
-            console.log(err);
+          if (err) {
+            console.error(err);
+            return res.json(500, {
+              message: "Database error.",
+              e: err
+            });
+          }
 
           res.locals.members = users.map(function (user) {
-            return {
+            var data = {
               id: user.id,
               name: user.name,
               team: user.team.map(function (team) {
@@ -101,10 +119,67 @@ module.exports = function (context) {
                 return String(this) === user.role.name;
               }
             };
+
+            // check email permission
+            if (~ req.user.role.permissions.indexOf("email")) {
+              data.email = user.email;
+            }
+
+            return data;
           });
 
-          res.render(res.locals.template);
-        });
+        res.render(res.locals.template);
+      });
     });
+  });
+
+  // update member role
+  router.post(2, "/members/:user_id", function (req, res) {
+    if (! req.xhr)
+      return res.send(400);
+
+    // check permission
+    if (! res.locals.admin)
+      return res.json(401, {message: "Unauthorized"});
+
+    model.User
+      .findOne(req.params.user_id)
+      .populate("team")
+      .populate("role")
+      .exec(function (err, user) {
+        if (err) {
+          console.error(err);
+          return res.json(500, {
+            message: "Database error.",
+            e: err
+          });
+        }
+
+        model.Role.findOne({name: req.body.role}, function (err, role) {
+          if (err) {
+            console.error(err);
+            return res.json(500, {
+              message: "Database error.",
+              e: err
+            });
+          }
+
+          user.role = role;
+
+          user.save(function (err) {
+            if (err) {
+              console.error(err);
+              return res.json(500, {
+                message: "Database error.",
+                e: err
+              });
+            }
+            
+            res.json({
+              status: "ok"
+            });
+          });
+        });
+      });
   });
 };

@@ -53,3 +53,11 @@ a[data-toggle="tab"] {
 .tabbable > ul > li:hover > .close {
   display: block;
 }
+
+.saved {
+  margin: 0 10px;
+  padding: 10px;
+  font-size: 14px;
+  color: #e74c3c;
+  display: none;
+}
