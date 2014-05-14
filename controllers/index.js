@@ -57,7 +57,7 @@ module.exports = function (app, passport) {
 
   // maintenance ctrl
   router.all(0, "/*", function (req, res, next) {
-    res.locals.admin = req.body && req.query.pass === process.env.MAINTENANCE_PASS || ~ req.user.role.permissions.indexOf("admin");
+    res.locals.admin = req.body && req.query.pass === process.env.MAINTENANCE_PASS || req.user && ~ req.user.role.permissions.indexOf("admin");
     next();
   });
 
