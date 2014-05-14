@@ -37,6 +37,7 @@ module.exports = function (context) {
 
       users = users.map(function (user) {
         return {
+          id: user.id,
           name: user.name,
           team: user.team,
           role: user.role.name,
@@ -90,6 +91,7 @@ module.exports = function (context) {
 
           res.locals.members = users.map(function (user) {
             return {
+              id: user.id,
               name: user.name,
               team: user.team.map(function (team) {
                 return team.name;
