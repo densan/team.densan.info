@@ -66,7 +66,7 @@ module.exports = function (context) {
     if (req.body.roles.length < 1)
       return res.json(400, {message: "Roles must have least one role."});
 
-    model.Role.find({
+    model.Role.getWithNop({
       name: {"$ne": "default"}
     }, function (err, c_roles) {
       if (err) {
@@ -93,8 +93,13 @@ module.exports = function (context) {
       c_roles = c_roles.map(function (c_role) {
         if (roles[c_role._id]) {
           return roles[c_role._id];
+        } else if (c_role.nop === 0) {
+          // check number of people
+          del_roles.push({
+            _id: c_role._id
+          });
+          return false;
         } else {
-          del_roles.push(c_role);
           return false;
         }
       }).filter(function (e) {

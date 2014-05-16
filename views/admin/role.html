@@ -20,7 +20,7 @@
           <!-- ko foreach: roles -->
           <li>
             <a data-toggle="tab" data-bind="text: name, attr: {href: url}, event: {dblclick: edit}"></a>
-            <button type="button" class="close" data-bind="click: remove">&times;</button>
+            <button type="button" class="close" data-bind="if: nop_over_zero, click: remove">&times;</button>
           </li>
           <!-- /ko -->
         </ul>
@@ -41,6 +41,7 @@
       <div>
         <button class="btn btn-inverse" data-bind="click: add">Add Role</button>
         <button class="btn btn-info" data-bind="click: save">Save</button>
+        <span id="saved" class="saved">保存しました。</span>
       </div>
     </div>
   </div>
@@ -79,7 +80,11 @@
       },
       owner: this
     });
-    this.nop = role.nop;
+    this.nop = role.nop || 0;
+    this.nop_over_zero = ko.computed(function () {
+      console.log(! that.nop);
+      return ! that.nop;
+    });
   }
   RoleModel.prototype.remove = function () {
     this.parent.roles.remove(this);
@@ -144,6 +149,8 @@
     }, 0);
   };
   RoleViewModel.prototype.save = function () {
+    var $saved = $("#saved");
+
     $(".tagsinput").change();
     var roles = ko.toJS(this.roles).map(function (role) {
       return {
@@ -164,7 +171,9 @@
       data: data,
       done: function (res) {
         instance.update(res.roles);
-        alert("保存されました。");
+        $saved.show()
+              .delay(500)
+              .fadeOut(500);
       },
       fail: function (errors) {
         alert(errors ? errors.join("\n") : "通信エラー");

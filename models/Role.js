@@ -16,13 +16,20 @@ module.exports = function (mongoose, db) {
     }
   });
 
-  schema.static("getWithNop", function (callback) {
+  schema.static("getWithNop", function (conditions, callback) {
+    if (typeof conditions === "function") {
+      callback = conditions;
+      conditions = null;
+    }
+
+    conditions = conditions || {};
+
     var promise = new mongoose.Promise;
     if (callback) promise.addBack(callback);
 
     var User = mongoose.model("User");
 
-    this.find().exec().then(function (roles) {
+    this.find(conditions).exec().then(function (roles) {
       var nops = [];
 
       roles.map(function (role) {
