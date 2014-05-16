@@ -40,9 +40,14 @@ module.exports = function (context) {
       template: "admin/role"
     });
 
-    model.Role.find(function (err, roles) {
-      if (err)
-        console.log(err);
+    model.Role.getWithNop(function (err, roles) {
+      if (err) {
+        console.error(err);
+        return res.json(500, {
+          message: "Database error.",
+          e: err
+        });
+      }
 
       res.locals.roles = JSON.stringify(roles);
       res.render(res.locals.template);
@@ -65,7 +70,7 @@ module.exports = function (context) {
       name: {"$ne": "default"}
     }, function (err, c_roles) {
       if (err) {
-        console.log(err);
+        console.error(err);
         return res.json(500, {
           message: "Database error.",
           e: err
@@ -118,15 +123,15 @@ module.exports = function (context) {
         });
       }).then(function () {
         // find all
-        return model.Role.find().exec();
+        return model.Role.getWithNop();
       }).then(function (roles) {
         res.json({
           status: "ok",
           roles: roles
         });
       }).reject(function (err) {
-        console.log(err);
-        return res.json(500, {
+        console.error(err);
+        res.json(500, {
           message: "Database error.",
           e: err
         });
@@ -144,8 +149,13 @@ module.exports = function (context) {
 
     // get user list
     model.User.getProfileList(function (err, users) {
-      if (err)
-        console.log(err);
+      if (err) {
+        console.error(err);
+        return res.json(500, {
+          message: "Database error.",
+          e: err
+        });
+      }
 
       console.log("\033[31mAdminAccess: \033[32m%s\033[m", req.user.id);
 
@@ -155,8 +165,13 @@ module.exports = function (context) {
       });
 
       fs.readFile(path.join(app.get("views"), res.locals.template), "utf8", function (err, data) {
-        if (err)
-          throw err;
+        if (err) {
+          console.error(err);
+          return res.json(500, {
+            message: "Database error.",
+            e: err
+          });
+        }
 
         var userlist = hogan.compile(data).render({members: users});
         res.send(userlist);

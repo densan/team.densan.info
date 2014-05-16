@@ -33,6 +33,7 @@
           <section class="tab-pane" data-bind="attr: {id: name}">
             <p>Permissions:</p>
             <input class="tagsinput" data-bind="value: permissions_str">
+            <p>所属人数: <span data-bind="text: nop"></span>人</p>
           </section>
           <!-- /ko -->
         </div>
@@ -78,6 +79,7 @@
       },
       owner: this
     });
+    this.nop = role.nop;
   }
   RoleModel.prototype.remove = function () {
     this.parent.roles.remove(this);
