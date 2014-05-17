@@ -82,7 +82,6 @@
     });
     this.nop = role.nop || 0;
     this.nop_over_zero = ko.computed(function () {
-      console.log(! that.nop);
       return ! that.nop;
     });
   }
