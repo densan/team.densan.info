@@ -32,7 +32,7 @@ module.exports = function (mongoose, db) {
     this.find(conditions).exec().then(function (roles) {
       var nops = [];
 
-      roles.map(function (role) {
+      return roles.map(function (role) {
         return User.find({role: role}).exec();
       }).reduce(function (p1, p2) {
         return p1.then(function (users) {
