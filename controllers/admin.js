@@ -144,6 +144,26 @@ module.exports = function (context) {
     });
   });
 
+  router.get(2, "/admin/team", function (req, res) {
+    res.locals({
+      root: res.locals,
+      error: req.flash("error"),
+      title: "Team - Admin",
+      template: "admin/team"
+    });
+
+    model.Team.getWithNop().then(function (teams) {
+      res.locals.data = JSON.stringify(teams);
+      res.render(res.locals.template);
+    }).reject(function (err) {
+      console.error(err);
+      res.json(500, {
+        message: "Database error.",
+        e: err
+      });
+    });
+  });
+
   router.get(2, "/admin/userlist.txt", function (req, res) {
     res.locals({
       root: res.locals,
