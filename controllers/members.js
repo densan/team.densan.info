@@ -45,6 +45,11 @@ module.exports = function (context) {
         });
       }
 
+      // API for Ajax
+      if (req.xhr) {
+        return res.json(members);
+      }
+
       res.locals.members = users.map(function (user) {
         var data = {
           id: user.id,
