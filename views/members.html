@@ -11,7 +11,13 @@
       {{>error}}
       
       <h1>Densan Members - {{team}}</h1>
-      <p>部員数 {{members.length}} 人</p>
+      <form method="get">
+        部員数 {{members.length}} 人
+        <select name="sort" class="sort" onchange="submit()">
+          <option value="id">ID ソート</option>
+          <option value="year">入学年ソート</option>
+        </select>
+      </form>
       <hr>
       {{#members}}
       <div>

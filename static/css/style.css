@@ -61,3 +61,7 @@ a[data-toggle="tab"] {
   color: #e74c3c;
   display: none;
 }
+
+.sort {
+  margin: 3px 10px;
+}
