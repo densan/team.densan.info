@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{>head}}
+</head>
+<body>
+  <div id="wrap">
+    {{>menu}}
+    
+    <div id="container" class="container">
+      {{>error}}
+      
+      <h1>team.densan.info - Control Panel</h1>
+      <p>Manage Team</p>
+      <p>Your Team: "{{profile.team}}"</p>
+      <hr>
+      <div class="tabbable tabs-left">
+        <ul id="tabs" class="nav nav-tabs">
+          <li class="active"><a href="#desc" data-toggle="tab">Team Name</a></li>
+          <!-- ko foreach: teams -->
+          <li>
+            <a data-toggle="tab" data-bind="text: name, attr: {href: url}, event: {dblclick: edit}"></a>
+            <button type="button" class="close" data-bind="if: nop_over_zero, click: remove">&times;</button>
+          </li>
+          <!-- /ko -->
+        </ul>
+        <div class="tab-content">
+          <section id="desc" class="tab-pane active">
+            <p>Note: 左のタブが Team 名、右側 (この部分) の内容が Team の情報になります。</p>
+            <p>タブをダブルクリックすると Team 名を変更できます。</p>
+          </section>
+          <!-- ko foreach: teams -->
+          <section class="tab-pane" data-bind="attr: {id: name}">
+            <h2><!-- ko text: name --><!-- /ko --> Team</h2>
+            <p>チーム情報</p>
+            <p>所属人数: <span data-bind="text: nop"></span>人</p>
+          </section>
+          <!-- /ko -->
+        </div>
+      </div>
+      <div>
+        <button class="btn btn-inverse" data-bind="click: add">Add Team</button>
+        <button class="btn btn-info" data-bind="click: save">Save</button>
+      </div>
+    </div>
+  </div>
+  
+  {{>footer}}
+  <script type="text/javascript" src="/js/libs/knockout.js"></script>
+  <script type="text/javascript" src="/js/libs/jquery.js"></script>
+  <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
+  <script type="text/javascript" src="/js/libs/jquery.tagsinput.js"></script>
+  <script type="text/javascript" src="/js/ajax.js"></script>
+  <script type="text/javascript">
+  $(function () {
+    // initial data
+    var init = {
+      teams: {{{data}}}
+    };
+
+    // apply view model
+    ko.applyBindings(new TeamViewModel(init), $("#container").get(0));
+  });
+
+  function TeamModel(team) {
+    var that = this;
+    this._id = team._id;
+    this.name = ko.observable(team.name);
+    this.url = ko.computed(function () {
+      return "#" + that.name();
+    });
+    this.nop = team.nop || 0;
+    this.nop_over_zero = ko.computed(function () {
+      return ! that.nop;
+    });
+  }
+  TeamModel.prototype.remove = function () {
+    this.parent.teams.remove(this);
+    $("#tabs > li > a:first").click();
+  };
+  TeamModel.prototype.edit = function (model, event) {
+    var $a = $(event.currentTarget);
+    // check already replaced
+    if ($a.find("input").length) {
+      return false;
+    }
+    // create input element and replace
+    var $input = $(document.createElement("input"));
+    $input.val($a.text())
+    .css({
+      width: $a.width(),
+      height: $a.height() - 6,
+      boxsizing: "border-box"
+    }).blur(function () {
+      $a.text($(this).val());
+      model.name($(this).val());
+    });
+    $a.html($input);
+    $input.focus();
+  };
+  function TeamViewModel(opts) {
+    var that = this;
+    this.teams = ko.observableArray();
+    this.update(opts.teams);
+    // set parent
+    TeamModel.prototype.parent = this;
+  }
+  TeamViewModel.prototype.add = function () {
+    this.teams.push(new TeamModel({
+      name: "team-" + this.count++
+    }));
+    // init tag UI
+    $(".tagsinput:last").tagsInput();
+  };
+  TeamViewModel.prototype.update = function (teams) {
+    this.teams(teams.map(function (team) {
+      return new TeamModel(team);
+    }));
+
+    var indexes = this.teams().map(function (team) {
+      var name = team.name();
+      if (name.slice(0, 5) === "team-") {
+        return parseInt(name.slice(5), 10);
+      } else {
+        return NaN;
+      }
+    }).filter(function (e) {
+      return e;
+    });
+    this.count = (indexes.length && Math.max.apply(Math, indexes)) + 1;
+
+    $("#tabs > li > a:first").click();
+    setTimeout(function () {
+      // tag UI
+      $(".tagsinput").tagsInput();
+    }, 0);
+  };
+  TeamViewModel.prototype.save = function () {
+    $(".tagsinput").change();
+    var teams = ko.toJS(this.teams).map(function (team) {
+      return {
+        _id: team._id,
+        name: team.name
+      }
+    });
+
+    var data = {
+      _csrf: "{{csrf_token}}",
+      teams: teams
+    };
+
+    var instance = this;
+
+    $.densan.ajax({
+      data: data,
+      done: function (res) {
+        instance.update(res.teams);
+        alert("保存されました。");
+      },
+      fail: function (errors) {
+        alert(errors ? errors.join("\n") : "通信エラー");
+      }
+    });
+  };
+  </script>
+</body>
+</html>
