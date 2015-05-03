@@ -8,6 +8,7 @@ var flash = require("connect-flash");
 var hogan = require("hogan-express");
 var passport = require("passport");
 var config = require("config");
+var libs = require("./libs");
 var http = require("http");
 var path = require("path");
 
@@ -98,7 +99,7 @@ app.configure("production", "maintenance-pro", function () {
   app.enable("view cache");
   app.use(express.compress());
   process.on("uncaughtException", function (err) {
-    console.log(err);
+    libs.logger.error(err);
   });
 });
 
@@ -106,5 +107,5 @@ app.configure("production", "maintenance-pro", function () {
 require("./controllers")(app, passport);
 
 http.createServer(app).listen(app.get("port"), function () {
-  console.log("Express server running at " + app.get("port"));
+  libs.logger.info("Express server running at", app.get("port"));
 });

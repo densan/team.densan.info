@@ -2,9 +2,10 @@
  * New Controller
  */
 
-var hogan = require("hogan.js"),
-    path = require("path"),
-    fs = require("fs");
+var hogan = require("hogan.js");
+var libs = require("../libs");
+var path = require("path");
+var fs = require("fs");
 
 module.exports = function (context) {
   var app = context.app,
@@ -41,7 +42,7 @@ module.exports = function (context) {
 
     model.Role.getWithNop(function (err, roles) {
       if (err) {
-        console.error(err);
+        libs.logger.error(err);
         return res.json(500, {
           message: "Database error.",
           e: err
@@ -69,7 +70,7 @@ module.exports = function (context) {
       name: {"$ne": "default"}
     }, function (err, c_roles) {
       if (err) {
-        console.error(err);
+        libs.logger.error(err);
         return res.json(500, {
           message: "Database error.",
           e: err
@@ -134,7 +135,7 @@ module.exports = function (context) {
           roles: roles
         });
       }).reject(function (err) {
-        console.error(err);
+        libs.logger.error(err);
         res.json(500, {
           message: "Database error.",
           e: err
@@ -155,7 +156,7 @@ module.exports = function (context) {
       res.locals.data = JSON.stringify(teams);
       res.render(res.locals.template);
     }).reject(function (err) {
-      console.error(err);
+      libs.logger.error(err);
       res.json(500, {
         message: "Database error.",
         e: err
@@ -174,14 +175,14 @@ module.exports = function (context) {
     // get user list
     model.User.getProfileList(function (err, users) {
       if (err) {
-        console.error(err);
+        libs.logger.error(err);
         return res.json(500, {
           message: "Database error.",
           e: err
         });
       }
 
-      console.log("\033[31mAdminAccess: \033[32m%s\033[m", req.user.id);
+      libs.logger.trace("\033[31mAdminAccess: \033[32m%s\033[m", req.user.id);
 
       res.locals.members = users;
       res.set({
@@ -190,7 +191,7 @@ module.exports = function (context) {
 
       fs.readFile(path.join(app.get("views"), res.locals.template), "utf8", function (err, data) {
         if (err) {
-          console.error(err);
+          libs.logger.error(err);
           return res.json(500, {
             message: "Database error.",
             e: err

@@ -2,15 +2,16 @@
  * Members Controller
  */
 
+var libs = require("../libs");
+
 module.exports = function (context) {
-  var app = context.app,
-      router = context.router,
+  var router = context.router,
       model = context.model;
 
   router.all(2, "/members*", function (req, res, next) {
     model.Role.find(function (err, roles) {
       if (err) {
-        console.error(err);
+        libs.logger.error(err);
         return res.json(500, {
           message: "Database error.",
           e: err
@@ -37,7 +38,7 @@ module.exports = function (context) {
 
     model.User.getProfileList(function (err, users) {
       if (err) {
-        console.error(err);
+        libs.logger.error(err);
         return res.json(500, {
           message: "Database error.",
           e: err
@@ -84,7 +85,7 @@ module.exports = function (context) {
 
     model.Team.find(function (err, teams) {
       if (err) {
-        console.error(err);
+        libs.logger.error(err);
         return res.json(500, {
           message: "Database error.",
           e: err
@@ -104,7 +105,7 @@ module.exports = function (context) {
         .populate("role")
         .exec(function (err, users) {
           if (err) {
-            console.error(err);
+            libs.logger.error(err);
             return res.json(500, {
               message: "Database error.",
               e: err
@@ -152,7 +153,7 @@ module.exports = function (context) {
       .populate("role")
       .exec(function (err, user) {
         if (err) {
-          console.error(err);
+          libs.logger.error(err);
           return res.json(500, {
             message: "Database error.",
             e: err
@@ -161,7 +162,7 @@ module.exports = function (context) {
 
         model.Role.findOne({name: req.body.role}, function (err, role) {
           if (err) {
-            console.error(err);
+            libs.logger.error(err);
             return res.json(500, {
               message: "Database error.",
               e: err
@@ -172,13 +173,13 @@ module.exports = function (context) {
 
           user.save(function (err) {
             if (err) {
-              console.error(err);
+              libs.logger.error(err);
               return res.json(500, {
                 message: "Database error.",
                 e: err
               });
             }
-            
+
             res.json({
               status: "ok"
             });

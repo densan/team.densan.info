@@ -7,6 +7,8 @@ var config = require("config");
 var mlo = require("mlo");
 var url = require("url");
 
+var libs = require("../libs");
+
 var models = mlo(__dirname).load();
 
 var options = {
@@ -27,10 +29,10 @@ mng.connections[0].on("connected", function () {
   // initialize Team Data
   models.Team.find(function (err, teams) {
     if (err) {
-      console.error(err);
+      libs.logger.error(err);
     }
 
-    console.log(teams);
+    libs.logger.trace(teams);
 
     if (teams.length === 0) {
       ["CG", "DTM", "Hard", "Network", "Soft"].forEach(function (name) {
@@ -39,7 +41,7 @@ mng.connections[0].on("connected", function () {
         });
         team.save(function (err) {
           if (err)
-            console.error(err);
+            libs.logger.error(err);
         });
       });
     }
@@ -48,10 +50,10 @@ mng.connections[0].on("connected", function () {
   // initialize Role Data
   models.Role.find(function (err, roles) {
     if (err) {
-      console.error(err);
+      libs.logger.error(err);
     }
 
-    console.log(roles);
+    libs.logger.trace(roles);
 
     if (roles.length === 0) {
       var role = new models.Role({
@@ -59,7 +61,7 @@ mng.connections[0].on("connected", function () {
       });
       role.save(function (err) {
         if (err)
-          console.error(err);
+          libs.logger.error(err);
       });
     }
   });

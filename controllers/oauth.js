@@ -3,6 +3,7 @@
  */
 
 var googleStrategy = require("passport-google").Strategy;
+var libs = require("../libs");
 
 module.exports = function (context) {
   var app = context.app,
@@ -45,8 +46,9 @@ module.exports = function (context) {
     } else {
       // id exist check
       model.User.findOne({id: user.id}, function (err, user_profile) {
-        if (err)
-          console.log(err);
+        if (err) {
+          libs.logger.error(err);
+        }
 
         if (user_profile === null) {
           req.session.status = "new";
@@ -85,7 +87,7 @@ module.exports = function (context) {
 
   // authentication failure
   router.get(0, "/auth/fail", function (req, res) {
-    console.log(req.flash("error"));
+    libs.logger.error(req.flash("error"));
     req.flash("error", {message: "認証失敗"});
     res.redirect("/");
   });

@@ -2,9 +2,10 @@
  * New Controller
  */
 
+var libs = require("../libs");
+
 module.exports = function (context) {
-  var app = context.app,
-      router = context.router,
+  var router = context.router,
       model = context.model;
 
   router.post(2, "/new", function (req, res) {
@@ -29,14 +30,16 @@ module.exports = function (context) {
       return res.json(400, {message: "Error", errors: ["チームを一つ以上選択してください"]});
 
     model.Team.getNameList(function (err, teams) {
-      if (err)
-        console.log(err);
+      if (err) {
+        libs.logger.error(err);
+      }
 
       res.locals.teams = teams;
 
       model.Role.findOne({name: "member"}, function (err, role) {
-        if (err)
-          console.log(err);
+        if (err) {
+          libs.logger.error(err);
+        }
 
         user.role = role;
 
@@ -48,8 +51,9 @@ module.exports = function (context) {
           .find()
           .or(queries)
           .exec(function (err, team) {
-            if (err)
-              console.log(err);
+            if (err) {
+              libs.logger.error(err);
+            }
 
             user.team = team;
 
@@ -67,7 +71,7 @@ module.exports = function (context) {
                   errs.push("次の情報を管理者へお伝え下さい", "DB Error: Unknown");
 
                 res.json(400, {message: "Error", errors: errs});
-                return console.log(err);
+                return libs.logger.error(err);
               }
 
               req.session.status = null;

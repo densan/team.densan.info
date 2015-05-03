@@ -2,6 +2,8 @@
  * Profile Controller
  */
 
+var libs = require("../libs");
+
 module.exports = function (context) {
   var app = context.app,
       router = context.router,
@@ -46,15 +48,17 @@ module.exports = function (context) {
       .find()
       .or(queries)
       .exec(function (err, team) {
-        if (err)
-          console.log(err);
+        if (err) {
+          libs.logger.error(err);
+        }
 
       req.user.team = team;
       req.user.email = req.body.email;
       req.user.timestamp = Date.now();
       model.User.findOne({id: req.user.id}, function (err, user_profile) {
-        if (err)
-          console.log(err);
+        if (err) {
+          libs.logger.error(err);
+        }
 
         user_profile.set("team", req.user.team);
         user_profile.set("email", req.user.email);
@@ -66,7 +70,7 @@ module.exports = function (context) {
               errs.push(err.errors[error].type);
 
             res.json(400, {message: "Error", errors: errs});
-            return console.log(err);
+            return libs.logger.error(err);
           }
 
           req.user.status = "ok";

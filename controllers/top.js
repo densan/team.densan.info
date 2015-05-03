@@ -2,19 +2,21 @@
  * Top Controller
  */
 
-var fs = require("fs"),
-    path = require("path");
+var libs = require("../libs");
+
+var fs = require("fs");
+var path = require("path");
 
 var ignoreList = [];
 fs.readdir(path.join(__dirname, "../static"), function (err, files) {
-  if (err)
+  if (err) {
     throw err;
+  }
   [].push.apply(ignoreList, files);
 });
 
 module.exports = function (context) {
-  var app = context.app,
-      router = context.router,
+  var router = context.router,
       model = context.model;
 
   router.get(1, "/", function (req, res) {
@@ -39,8 +41,9 @@ module.exports = function (context) {
       res.locals.template = "home";
 
       model.Team.getNameList(function (err, teams) {
-        if (err)
-          console.log(err);
+        if (err) {
+          libs.logger.error(err);
+        }
 
         res.locals.teams = teams;
         res.render(res.locals.template);
@@ -60,8 +63,9 @@ module.exports = function (context) {
       res.locals.template = "new";
       res.locals.profile = req.session.profile;
       model.Team.getNameList(function (err, teams) {
-        if (err)
-          console.log(err);
+        if (err) {
+          libs.logger.error(err);
+        }
 
         res.locals.teams = teams;
         res.render(res.locals.template);
@@ -84,8 +88,9 @@ module.exports = function (context) {
         res.locals.profile = req.user;
 
         model.Team.getNameList(function (err, teams) {
-          if (err)
-            console.log(err);
+          if (err) {
+            libs.logger.error(err);
+          }
 
           // sync teams data
           res.locals.teams = teams;
