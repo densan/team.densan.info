@@ -1,10 +1,12 @@
 {
-  "name": "densan-core",
+  "name": "team.densan.info",
   "version": "0.1.0",
   "dependencies": {
     "express": "~3.1.1",
+    "config": "^1.12.0",
     "connect-flash": "~0.1.0",
     "hogan-express": "~0.3.3",
+    "js-yaml": "^3.3.0",
     "passport": "~0.1.16",
     "passport-google": "~0.3.0",
     "validator": "~0.4.28",
