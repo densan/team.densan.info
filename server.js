@@ -3,17 +3,13 @@
  * server.js
  */
 
-var express = require("express"),
-    flash = require("connect-flash"),
-    hogan = require("hogan-express"),
-    passport = require("passport"),
-    yaml = require("js-yaml"),
-    http = require("http"),
-    path = require("path"),
-    fs = require("fs");
-
-// load settings
-var config = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, "config.yml"), "utf8"));
+var express = require("express");
+var flash = require("connect-flash");
+var hogan = require("hogan-express");
+var passport = require("passport");
+var config = require("config");
+var http = require("http");
+var path = require("path");
 
 // express server settings
 var app = express();

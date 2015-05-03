@@ -5,8 +5,7 @@
 module.exports = function (context) {
   var app = context.app,
       router = context.router,
-      model = context.model,
-      Validator = context.Validator;
+      model = context.model;
 
   router.get(2, "/profile", function (req, res) {
     res.locals({

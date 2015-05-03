@@ -5,8 +5,7 @@
 module.exports = function (context) {
   var app = context.app,
       router = context.router,
-      model = context.model,
-      Validator = context.Validator;
+      model = context.model;
 
   router.all(2, "/members*", function (req, res, next) {
     model.Role.find(function (err, roles) {

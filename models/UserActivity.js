@@ -2,35 +2,35 @@
  * UserActivity Model
  */
 
-module.exports = function (mongoose, db) {
-  var UserActivity = new mongoose.Schema({
-    id: {
-      type: String,
-      index: true,
-      required: true
-    },
-    url: {
-      type: String,
-      required: true
-    },
-    detail: {
-      type: String,
-      required: true
-    },
-    timestamp: {
-      type: Date,
-      "default": Date.now,
-      required: true
-    },
-    rowData: {
-      type: String
-    }
-  });
+var mongoose = require("mongoose");
 
-  UserActivity.statics.checkActivity = function (id, url, callback) {
-    this.find({id: id, url: url});
-    //callback(err, res);
-  };
+var UserActivity = new mongoose.Schema({
+  id: {
+    type: String,
+    index: true,
+    required: true
+  },
+  url: {
+    type: String,
+    required: true
+  },
+  detail: {
+    type: String,
+    required: true
+  },
+  timestamp: {
+    type: Date,
+    "default": Date.now,
+    required: true
+  },
+  rowData: {
+    type: String
+  }
+});
 
-  return mongoose.model("UserActivity", UserActivity);
+UserActivity.statics.checkActivity = function (id, url, callback) {
+  this.find({id: id, url: url});
+  callback(new Error("is not implemented"));
 };
+
+module.exports = mongoose.model("UserActivity", UserActivity);

@@ -2,23 +2,39 @@
  * Model Index
  */
 
-var mongoose = require("mongoose"),
-    autoloader = require("../libs/autoloader");
+var mongoose = require("mongoose");
+var config = require("config");
+var mlo = require("mlo");
+var url = require("url");
 
-module.exports = function (url, Validator) {
-  var db = mongoose.connect(url),
-      model = autoloader(__dirname, mongoose, db, Validator);
+var models = mlo(__dirname).load();
 
+var options = {
+  protocol: "mongodb",
+  slashes: true,
+  port: config.db.port,
+  hostname: config.db.host,
+  pathname: config.db.name
+};
+
+if (config.db.user && config.db.pass) {
+  options.auth = [config.db.user, config.db.pass].join(":");
+}
+
+var mongo_url = url.format(options);
+var mng = mongoose.connect(mongo_url);
+mng.connections[0].on("connected", function () {
   // initialize Team Data
-  model.Team.find(function (err, teams) {
-    if (err)
+  models.Team.find(function (err, teams) {
+    if (err) {
       console.error(err);
+    }
 
     console.log(teams);
 
     if (teams.length === 0) {
       ["CG", "DTM", "Hard", "Network", "Soft"].forEach(function (name) {
-        var team = new model.Team({
+        var team = new models.Team({
           name: name
         });
         team.save(function (err) {
@@ -30,14 +46,15 @@ module.exports = function (url, Validator) {
   });
 
   // initialize Role Data
-  model.Role.find(function (err, roles) {
-    if (err)
+  models.Role.find(function (err, roles) {
+    if (err) {
       console.error(err);
+    }
 
     console.log(roles);
 
     if (roles.length === 0) {
-      var role = new model.Role({
+      var role = new models.Role({
         name: "member"
       });
       role.save(function (err) {
@@ -46,6 +63,6 @@ module.exports = function (url, Validator) {
       });
     }
   });
+});
 
-  return model;
-};
+module.exports = models;

@@ -3,8 +3,7 @@
  */
 
 var fs = require("fs"),
-    path = require("path"),
-    Flow = require("async-flow");
+    path = require("path");
 
 var ignoreList = [];
 fs.readdir(path.join(__dirname, "../static"), function (err, files) {
@@ -16,8 +15,7 @@ fs.readdir(path.join(__dirname, "../static"), function (err, files) {
 module.exports = function (context) {
   var app = context.app,
       router = context.router,
-      model = context.model,
-      Validator = context.Validator;
+      model = context.model;
 
   router.get(1, "/", function (req, res) {
     res.locals({

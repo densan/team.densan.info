@@ -2,20 +2,26 @@
   "name": "team.densan.info",
   "version": "0.1.0",
   "dependencies": {
-    "express": "~3.1.1",
     "config": "^1.12.0",
     "connect-flash": "~0.1.0",
+    "express": "~3.1.1",
     "hogan-express": "~0.3.3",
+    "hogan.js": "~2.0.0",
     "js-yaml": "^3.3.0",
+    "log4js": "^0.6.24",
+    "log4js-extend": "^0.1.2",
+    "mlo": "^1.0.0",
+    "mongoose": "~3.8.9",
     "passport": "~0.1.16",
     "passport-google": "~0.3.0",
-    "validator": "~0.4.28",
-    "mongoose": "~3.8.9",
-    "async-flow": "~0.3.0",
-    "hogan.js": "~2.0.0",
-    "js-yaml": "^3.0.2"
+    "validator": "^3.39.0"
   },
   "scripts": {
     "start": "node boot production"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/densan/team.densan.info.git"
+  },
+  "homepage": "https://github.com/densan/team.densan.info"
 }

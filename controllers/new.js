@@ -5,8 +5,7 @@
 module.exports = function (context) {
   var app = context.app,
       router = context.router,
-      model = context.model,
-      Validator = context.Validator;
+      model = context.model;
 
   router.post(2, "/new", function (req, res) {
     // check XHR

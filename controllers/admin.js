@@ -9,8 +9,7 @@ var hogan = require("hogan.js"),
 module.exports = function (context) {
   var app = context.app,
       router = context.router,
-      model = context.model,
-      Validator = context.Validator;
+      model = context.model;
 
   // maintenance mode
   router.all(2, "/admin*", function (req, res, next) {
