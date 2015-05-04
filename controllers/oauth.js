@@ -2,7 +2,9 @@
  * OAuth Controller
  */
 
-var googleStrategy = require("passport-google").Strategy;
+var googleStrategy = require("passport-google-oauth2").Strategy;
+var config = require("config");
+var validator = require("validator");
 var libs = require("../libs");
 
 module.exports = function (context) {
@@ -19,7 +21,11 @@ module.exports = function (context) {
     model.User.getProfileList(id, done);
   });
 
-  passport.use(new googleStrategy(app.get("auth"), function (req, id, profile, done) {
+  config.google.passReqToCallback = true;
+
+  passport.use(new googleStrategy(config.google, function (req, access_token, refresh_token, profile, done) {
+    libs.logger.trace(profile);
+
     // user profile
     var user = {
       name: {
@@ -32,7 +38,7 @@ module.exports = function (context) {
     // check HUS Student
     var is_HUS_student = profile.emails.some(function (item) {
       var email = item.value;
-      var is_HUS_email = email.slice(-10) === ".hus.ac.jp";
+      var is_HUS_email = validator.equals(email.slice(-9), "hus.ac.jp");
       if (is_HUS_email) {
         user.id = email.split("@")[0];
       }
@@ -78,11 +84,12 @@ module.exports = function (context) {
   });
 
   // google auth
-  router.get(0, "/auth", passport.authenticate("google"));
+  router.get(0, "/auth", passport.authenticate("google", {
+    scope: ["openid", "email", "profile"]
+  }));
   router.get(0, "/auth/callback", passport.authenticate("google", {
     successRedirect: "/",
-    failureRedirect: "/auth/fail",
-    failureFlash: true
+    failureRedirect: "/auth/fail"
   }));
 
   // authentication failure

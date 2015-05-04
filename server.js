@@ -21,19 +21,6 @@ app.configure("development", "maintenance-dev", function () {
 });
 
 app.configure(function () {
-  app.set("port", 3000);
-  app.set("mongo", {
-    hostname: config.db.host,
-    port: config.db.port,
-    username: config.db.user,
-    password: config.db.pass,
-    db: config.db.name
-  });
-  app.set("auth", {
-    returnURL: "http://localhost:3000/auth/callback",
-    realm: "http://localhost:3000/",
-    passReqToCallback: true
-  });
   app.set("view engine", "html");
   app.set("layout", "layout");
   app.set("partials", {
@@ -73,39 +60,17 @@ app.configure(function () {
 });
 
 app.configure("production", "maintenance-pro", function () {
-  if (process.env.VCAP_APP_PORT)
-    app.set("port", process.env.VCAP_APP_PORT);
-  else
-    app.set("port", process.env.PORT || 3000);
-
-  if (process.env.VCAP_SERVICES) {
-    var services = JSON.parse(process.env.VCAP_SERVICES);
-    if (services["mongodb-1.8"][0].credentials)
-      app.set("mongo", services["mongodb-1.8"][0].credentials);
-
-    app.set("auth", {
-      returnURL: "http://densan.hp.af.cm/auth/callback",
-      realm: "http://densan.hp.af.cm",
-      passReqToCallback: true
-    });
-  } else {
-    app.set("auth", {
-      returnURL: "http://team.densan.info/auth/callback",
-      realm: "http://team.densan.info",
-      passReqToCallback: true
-    });
-  }
-
   app.enable("view cache");
   app.use(express.compress());
-  process.on("uncaughtException", function (err) {
-    libs.logger.error(err);
-  });
+});
+
+process.on("uncaughtException", function (err) {
+  libs.logger.error(err);
 });
 
 // router
 require("./controllers")(app, passport);
 
-http.createServer(app).listen(app.get("port"), function () {
+http.createServer(app).listen(config.server.port, function () {
   libs.logger.info("Express server running at", app.get("port"));
 });

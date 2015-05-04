@@ -31,9 +31,9 @@ var UserSchema = new mongoose.Schema({
       }
 
       var is_email = validator.isEmail(value);
-      var is_hus = validator.equals(value.slice(-9), "hus.ac.jp");
+      var isnt_HUS_email = ! validator.equals(value.slice(-9), "hus.ac.jp");
 
-      return is_email && is_hus;
+      return is_email && isnt_HUS_email;
     }, "不正なメールアドレスです"]
   },
   team: [{
