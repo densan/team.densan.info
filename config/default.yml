@@ -1,0 +1,29 @@
+# サーバの設定
+server:
+  port: 3000
+
+# MongoDB の設定
+db:
+  host: localhost
+  port: 27017
+  name: db_name
+  user: db_username
+  pass: db_password
+
+# セッションの設定
+session:
+  secret: session_secret
+
+# ロガーの設定
+logger:
+  appenders:
+    - type: console
+    - type: dateFile
+      filename: logs/densan.log
+      pattern: -yyyy-MM-dd
+
+# Google 認証の設定
+google:
+  clientID: client_id
+  clientSecret: client_secret
+  callbackURL: http://localhost:3000/auth/callback

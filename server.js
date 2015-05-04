@@ -3,112 +3,108 @@
  * server.js
  */
 
-var express = require("express"),
-    flash = require("connect-flash"),
-    hogan = require("hogan-express"),
-    passport = require("passport"),
-    yaml = require("js-yaml"),
-    http = require("http"),
-    path = require("path"),
-    fs = require("fs");
-
-// load settings
-var config = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, "config.yml"), "utf8"));
+var express = require("express");
+var bodyParser = require("body-parser");
+var session = require("express-session");
+var MongoStore = require("connect-mongo")(session);
+var flash = require("connect-flash");
+var csrf = require("csurf");
+var hogan = require("hogan-express");
+var passport = require("passport");
+var config = require("config");
+var libs = require("./libs");
+var routes = require("./routes");
+var path = require("path");
 
 // express server settings
 var app = express();
 
-app.configure("development", "maintenance-dev", function () {
-  app.use(express.logger("dev"));
-  app.use(express.errorHandler());
+// express settings
+app.disable("x-powered-by");
+app.set("port", process.env.PORT || config.server.port);
+app.set("views", path.resolve(__dirname, "views"));
+app.set("view engine", "html");
+app.set("layout", "layout");
+app.engine("html", hogan);
+app.set("partials", {
+  error  : "partials/error",
+  head   : "partials/head",
+  menu   : "partials/menu",
+  footer : "partials/footer"
 });
+app.locals.menu = function () {
+  return function (title) {
+    var current_title = this.title.split("-").slice(-1)[0].trim();
+    return title === current_title ? "active" : "";
+  };
+};
 
-app.configure(function () {
-  app.set("port", 3000);
-  app.set("mongo", {
-    hostname: config.db.host,
+// middleware
+app.use(express.static(path.resolve(__dirname, "static")));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(session({
+  name: config.session.name,
+  cookie: config.session.cookie,
+  secret: config.session.secret,
+  store: new MongoStore({
+    db: config.db.name,
+    host: config.db.host,
     port: config.db.port,
     username: config.db.user,
-    password: config.db.pass,
-    db: config.db.name
-  });
-  app.set("auth", {
-    returnURL: "http://localhost:3000/auth/callback",
-    realm: "http://localhost:3000/",
-    passReqToCallback: true
-  });
-  app.set("view engine", "html");
-  app.set("layout", "layout");
-  app.set("partials", {
-    error  : "partials/error",
-    head   : "partials/head",
-    menu   : "partials/menu",
-    footer : "partials/footer"
-  });
-  app.locals({
-    menu: function (title) {
-      var current_title = this.title.split("-").slice(-1)[0].trim();
-      return title === current_title ? "active" : "";
-    }
-  });
-  app.set("views", path.join(__dirname, "views"));
-  // startup token
-  app.set("token", ~~(Math.random() * Math.pow(10, 8)));
-  app.engine("html", hogan);
-  app.use(express.static(path.join(__dirname, "static")));
-  app.use(express.cookieParser("secaccerss:c"));
-  app.use(express.bodyParser());
-  app.use(express.cookieSession({
-    secret: config.session.secret,
-    // expire after 1 week
-    cookie: {maxAge: 1000 * 60 * 60 * 24 * 7}
-  }));
-  app.use(flash());
-  app.use(express.csrf());
-  app.use(function (req, res, next) {
-    // set csrf token
-    res.locals.csrf_token = req.session._csrf;
-    next();
-  });
-  app.use(passport.initialize());
-  app.use(passport.session());
-  app.use(app.router);
+    password: config.db.pass
+  }),
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(flash());
+app.use(csrf());
+app.use(function (req, res, next) {
+  // set csrf token
+  res.locals.csrf_token = req.csrfToken();
+  next();
 });
 
-app.configure("production", "maintenance-pro", function () {
-  if (process.env.VCAP_APP_PORT)
-    app.set("port", process.env.VCAP_APP_PORT);
-  else
-    app.set("port", 61030);
-
-  if (process.env.VCAP_SERVICES) {
-    var services = JSON.parse(process.env.VCAP_SERVICES);
-    if (services["mongodb-1.8"][0].credentials)
-      app.set("mongo", services["mongodb-1.8"][0].credentials);
-
-    app.set("auth", {
-      returnURL: "http://densan.hp.af.cm/auth/callback",
-      realm: "http://densan.hp.af.cm",
-      passReqToCallback: true
-    });
-  } else {
-    app.set("auth", {
-      returnURL: "http://team.densan.info/auth/callback",
-      realm: "http://team.densan.info",
-      passReqToCallback: true
-    });
-  }
-
-  app.enable("view cache");
-  app.use(express.compress());
-  process.on("uncaughtException", function (err) {
-    console.log(err);
-  });
+// passport settings
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(function (req, res, next) {
+  res.locals.user = req.user;
+  next();
 });
 
-// router
-require("./controllers")(app, passport);
+app.use(routes);
 
-http.createServer(app).listen(app.get("port"), function () {
-  console.log("Express server running at " + app.get("port"));
+// development error handler
+// will print stacktrace
+if (app.get("env") === "development") {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render("error", {
+        message: err.message,
+        error: err
+    });
+    next; // ignore jshint error
+  });
+} else {
+  // production error handler
+  // no stacktraces leaked to user
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render("error", {
+      message: err.message,
+      error: null
+    });
+    next; // ignore jshint error
+  });
+}
+
+process.on("uncaughtException", function (err) {
+  libs.logger.error(err);
+});
+
+var server = app.listen(config.server.port, function() {
+  console.log("Express server listening on", JSON.stringify(server.address()));
 });

@@ -1,10 +1,29 @@
-*.
-!.gitignore
+.*
 
+# Git
+!.gitignore
+!.gitkeep
+
+# Node.js
 node_modules
 *.log
 
-config.yml
+# Configuration
+config/*
+!config/default.yml
+
+# MongoDB
 db/*
 !db/mongod.conf
+
+# Windows
 Thumbs.db
+
+# editorconfig
+!.editorconfig
+
+# Log
+logs/*
+
+# Code Climate
+!.codeclimate.yml

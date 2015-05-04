@@ -1,0 +1,11 @@
+{
+  "apps": [{
+    "name": "team",
+    "script": "server.js",
+    "env": {
+      "NODE_ENV": "production"
+    },
+    "instances": 1,
+    "log_date_format": "YYYY-MM-DD HH:mm:ss Z"
+  }]
+}
