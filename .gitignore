@@ -1,4 +1,4 @@
-*.
+.*
 
 # Git
 !.gitignore
@@ -24,3 +24,6 @@ Thumbs.db
 
 # Log
 logs/*
+
+# Code Climate
+!.codeclimate.yml
