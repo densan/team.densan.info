@@ -65,11 +65,11 @@ module.exports = function (context) {
         user_profile.set("timestamp", req.user.timestamp);
         user_profile.save(function (err) {
           if (err) {
-            var errs = [];
-            for (var error in err.errors)
-              errs.push(err.errors[error].type);
+            var errors = Object.keys(err.errors).map(function (key) {
+              return key + ":" + err.errors[key].message;
+            });
 
-            res.json(400, {message: "Error", errors: errs});
+            res.json(400, {message: "Error", errors: errors});
             return libs.logger.error(err);
           }
 

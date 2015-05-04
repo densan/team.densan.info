@@ -60,20 +60,18 @@ module.exports = function (context) {
             user = new model.User(user);
             user.save(function (err) {
               if (err) {
-                var errs = [];
+                var errors = [];
                 if (err.errors) {
-                  for (var error in err.errors) {
-                    if (err.errors.hasOwnProperty(error)) {
-                      errs.push(err.errors[error].message);
-                    }
-                  }
+                  errors = Object.keys(err.errors).map(function (key) {
+                    return key + ":" + err.errors[key].message;
+                  });
                 } else if (err.err) {
-                  errs.push("次の情報を管理者へお伝え下さい", "DB Error: " + err.err);
+                  errors.push("次の情報を管理者へお伝え下さい", "DB Error: " + err.err);
                 } else {
-                  errs.push("次の情報を管理者へお伝え下さい", "DB Error: Unknown");
+                  errors.push("次の情報を管理者へお伝え下さい", "DB Error: Unknown");
                 }
 
-                res.json(400, {message: "Error", errors: errs});
+                res.json(400, {message: "Error", errors: errors});
                 return libs.logger.error(err);
               }
 

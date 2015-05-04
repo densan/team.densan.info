@@ -21,3 +21,6 @@ Thumbs.db
 
 # editorconfig
 !.editorconfig
+
+# Log
+logs/*
