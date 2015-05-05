@@ -9,7 +9,6 @@ var models = require("../models");
 
 router.get("/", function (req, res) {
   res.locals.error = req.flash("error");
-  res.locals.profile = req.user;
   res.locals.title = "Profile";
   res.locals.template = "profile";
   res.locals.index = function () {
@@ -23,11 +22,6 @@ router.post("/save", function (req, res) {
   // check XHR
   if (! req.xhr) {
     return res.json(400, {message: "Bad Request"});
-  }
-
-  // check logged in
-  if (! req.user) {
-    return res.json(401, {message: "Unauthorized"});
   }
 
   // get user list

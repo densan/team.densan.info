@@ -69,10 +69,13 @@ router.get("/logout", function (req, res) {
 // check logged in
 router.get("/:page*", function (req, res, next) {
   if (! req.user && req.params.page !== "auth") {
+    if (req.xhr) {
+      return res.json(401, {message: "Unauthorized"});
+    }
+
     req.flash("redirect");
     req.flash("redirect", req.originalUrl);
-    res.redirect("/auth");
-    return false;
+    return res.redirect("/auth");
   }
 
   next();
