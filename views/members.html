@@ -1,91 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  {{>head}}
+	{{>head}}
 </head>
 <body>
-  <div id="wrap">
-    {{>menu}}
-    
-    <div class="container">
-      {{>error}}
-      
-      <h1>Densan Members - {{team}}</h1>
-      <form method="get">
-        部員数 {{members.length}} 人
-        <select name="sort" class="sort" onchange="submit()">
-          <option value="id">ID ソート</option>
-          <option value="year">入学年ソート</option>
-        </select>
-      </form>
-      <hr>
-      {{#members}}
-      <div>
-        <p>id: {{id}}</p>
-        {{#name}}
-        <p>name: {{last}} {{first}}</p>
-        {{/name}}
-        {{#email}}
-        <p>email: {{email}}</p>
-        {{/email}}
-        <p>team:</p>
-        <ul>
-        {{#team}}
-          <li>{{.}}</li>
-        {{/team}}
-        </ul>
-        {{^admin}}
-        <p>Role: {{role}}</p>
-        {{/admin}}
-        {{#admin}}
-        <p>Role:</p>
-        <p>
-          <select class="role-picker" name="team" class="form-item select-block" data-user-id="{{id}}">
-            {{#roles}}
-            <option value="{{.}}" {{#selected}}selected{{/selected}}>{{.}}</option>
-            {{/roles}}
-          </select>
-          <span class="saved">保存しました。</span>
-        </p>
-        {{/admin}}
-        <hr>
-      </div>
-      {{/members}}
-    </div>
-  </div>
-  
-  {{>footer}}
-  <script type="text/javascript" src="/js/libs/jquery.js"></script>
-  <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
-  <script type="text/javascript" src="/js/libs/bootstrap-select.js"></script>
-  <script type="text/javascript" src="/js/ajax.js"></script>
-  <script>
-    $(function () {
-      var $rolePicker = $(".role-picker");
-      $rolePicker.selectpicker({style: "btn-primary", menuStyle: "dropdown-inverse"});
-      $rolePicker.change(function () {
-        var $elem = $(this),
-            $saved = $elem.parent().find("span.saved"),
-            role = $elem.val(),
-            user_id = $elem.attr("data-user-id");
+	<main>
+		{{>menu}}
 
-        $.densan.ajax({
-          url: "/members/" + user_id + location.search,
-          data: {
-            _csrf: "{{csrf_token}}",
-            role: role
-          },
-          done: function () {
-            $saved.show()
-                  .delay(500)
-                  .fadeOut(500);
-          },
-          fail: function (errors) {
-            alert(errors ? errors.join("\n") : "通信エラー");
-          }
-        });
-      });
-    });
-  </script>
+		<div class="container">
+			{{>error}}
+
+			<h2>Densan Members - {{team}}</h2>
+			<form method="get">
+				部員数 {{members.length}} 人
+				<select name="sort" onchange="submit()">
+					<option value="" disabled selected>ソート選択</option>
+					<option value="id">ID ソート</option>
+					<option value="year">入学年ソート</option>
+				</select>
+				<label>Sort</label>
+			</form>
+			<hr>
+			{{#members}}
+			<div>
+				<p>id: {{id}}</p>
+				{{#name}}
+				<p>name: {{last}} {{first}}</p>
+				{{/name}}
+				{{#email}}
+				<p>email: {{email}}</p>
+				{{/email}}
+				<p>team:</p>
+				<ul>
+				{{#team}}
+				  <li>{{.}}</li>
+				{{/team}}
+				</ul>
+				{{^admin}}
+				<p>Role: {{role}}</p>
+				{{/admin}}
+				{{#admin}}
+				<p>Role:</p>
+				<p>
+					<select class="role-picker" name="team" class="form-item select-block" data-user-id="{{id}}">
+						{{#roles}}
+						<option value="{{.}}" {{#selected}}selected{{/selected}}>{{.}}</option>
+						{{/roles}}
+					</select>
+					<span class="saved">保存しました。</span>
+				</p>
+				{{/admin}}
+				<hr>
+			</div>
+			{{/members}}
+		</div>
+	</main>
+
+	{{>footer}}
+	<script type="text/javascript" src="/js/members.js"></script>
 </body>
 </html>

@@ -1,93 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  {{>head}}
+	{{>head}}
 </head>
 <body>
-  <div id="wrap">
-    {{>menu}}
-    
-    <div class="container">
-      {{>error}}
-      
-      <h1>Profile Settings</h1>
-      <p>あなたのプロフィール情報を編集出来ます。</p>
-      <hr>
-      {{#profile}}
-      <form id="profile">
-        <dl class="list">
-          <dt>id:</dt>
-          <dd>{{id}}</dd>
-        </dl>
-        <dl class="list">
-          <dt>Name:</dt>
-          <dd>{{#name}}{{last}} {{first}}{{/name}}</dd>
-        </dl>
-        <dl class="list">
-          <dt>Email:</dt>
-          <dd><input class="form-item" name="email" type="email" value="{{email}}" required></dd>
-        </dl>
-        <dl class="list">
-          <dt>Role:</dt>
-          <dd>{{role.name}}</dd>
-        </dl>
-        <dl class="list">
-          <dt>Team:</dt>
-          <dd id="teams">
-            <div class="team-picker">
-              <select id="team-picker" name="team" class="form-item select-block" multiple>
-                {{#teams}}
-                <option value="{{.}}">{{.}}</option>
-                {{/teams}}
-              </select>
-            </div>
-          </dd>
-        </dl>
-        <button type="submit" class="btn btn-primary">Save</button>
-      </form>
-      {{/profile}}
-    </div>
-  </div>
-  
-  {{>footer}}
-  <script type="text/javascript" src="/js/libs/jquery.js"></script>
-  <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
-  <script type="text/javascript" src="/js/libs/bootstrap-select.js"></script>
-  <script type="text/javascript" src="/js/ajax.js"></script>
-  <script type="text/javascript">
-    $(function () {
-      $("#profile").submit(function (e) {
-        e.preventDefault();
-        
-        var data = $(this).serializeArray();
-        data.push({
-          name: "_csrf",
-          value: "{{csrf_token}}"
-        });
-        
-        $.densan.ajax({
-          url: "/profile/save",
-          data: data,
-          done: function () {
-            alert("保存されました。");
-            location.reload(true);
-          },
-          fail: function (errors) {
-            alert(errors ? errors.join("\n") : "通信エラー");
-          }
-        });
-      });
-      
-      var $teamPicker = $("#team-picker"),
-          team = "{{profile.team}}".split(",");
-      $teamPicker
-        .selectpicker({style: "btn-primary", menuStyle: "dropdown-inverse"})
-        .selectpicker("val", team);
-      
-      $("#teams").on("click", "button.delete", function () {
-        $(this).parent().remove();
-      });
-    });
-  </script>
+	<main>
+		{{>menu}}
+
+		<div class="container">
+			{{>error}}
+
+			<h1>Profile Settings</h1>
+			<p>プロフィール情報の設定</p>
+			<hr>
+			{{#profile}}
+			<form action="?_csrf={{csrf_token}}" method="post" v-on="submit:save">
+				<div class="input-field">
+					<input type="text" value="{{id}}" disabled>
+					<label>ID</label>
+				</div>
+				<div class="input-field">
+					<input type="text" value="{{#name}}{{last}} {{first}}{{/name}}" disabled>
+					<label>Name</label>
+				</div>
+				<div class="input-field">
+					<input id="form-email" class="validate" type="email" value="{{email}}" required v-model="email">
+					<label for="form-email">Email</label>
+				</div>
+				<div class="input-field">
+					<input type="text" value="{{role.name}}" disabled>
+					<label>Role</label>
+				</div>
+				<div class="row">
+					<input type="hidden" value="{{team}}" v-model="team" disabled>
+				{{#teams}}
+					<p class="col m3 s4">
+						<input id="form-team-{{.}}" name="team" type="checkbox" value="{{.}}" v-model="team_{{.}}" checked>
+						<label for="form-team-{{.}}">{{.}}</label>
+					</p>
+				{{/teams}}
+				</div>
+				<button type="submit" class="btn waves-effect waves-light right">Save</button>
+			</form>
+			{{/profile}}
+		</div>
+	</main>
+
+	{{>footer}}
+	<script type="text/javascript" src="/js/profile.js"></script>
 </body>
 </html>

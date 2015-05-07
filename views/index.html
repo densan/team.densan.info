@@ -1,32 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  {{>head}}
+	{{>head}}
 </head>
 <body>
-  <div id="wrap">
-    <div class="container">
-      {{>error}}
-      
-      <header class="text-center main">
-        <h1>team.densan.info</h1>
-        <p class="lead">- 電算部員専用サイト -</p>
-      </header>
-      
-      <section class="row-fluid">
-        <div class="span4 offset4">
-          <p class="text-info">末尾が hus.ac.jp のメールアドレスで認証してください。</p>
-          <a href="auth" class="btn btn-large btn-block btn-inverse">Google Login</a>
-        </div>
-      </section>
-    </div>
-  </div>
-  
-  {{>footer}}
-  <script type="text/javascript" src="/js/libs/jquery.js"></script>
-  <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
-  <script type="text/javascript">
-    $("[data-toggle=tooltip]").tooltip({trigger: "hover"});
-  </script>
+	<main>
+		<div class="container">
+			{{>error}}
+
+			<header class="center-align">
+				<h2>team.densan.info</h2>
+				<p>- 電算部員専用サイト -</p>
+			</header>
+
+			<section class="row">
+				<div class="col s8 offset-s2 center-align">
+					<p class="text-info">末尾が hus.ac.jp のメールアドレスで認証してください。</p>
+					<a href="auth" class="btn btn-large waves-effect waves-light">Google Login</a>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	{{>footer}}
 </body>
 </html>

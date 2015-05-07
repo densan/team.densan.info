@@ -18,58 +18,53 @@ router.get("/", function (req, res) {
   res.render(res.locals.template);
 });
 
-router.post("/save", function (req, res) {
+router.post("/", function (req, res) {
   // check XHR
   if (! req.xhr) {
-    return res.json(400, {message: "Bad Request"});
+    return res.status(400).json({
+      status: "ng",
+      message: "Bad Request"
+    });
   }
 
-  // get user list
-  req.user.team = req.body.team ? req.body.team : [];
-  if (typeof req.user.team === "string") {
-    req.user.team = [req.body.team];
-  }
-  // check team list
-  if (req.user.team.length === 0) {
-    return res.json(400, {message: "Error", errors: ["チームを一つ以上選択してください"]});
+  // get team list and validate
+  var team = req.body.team || [];
+  if (! Array.isArray(team) || team.length === 0) {
+    return res.status(400).json({
+      status: "ng",
+      message: "Error",
+      errors: ["チームを一つ以上選択してください"]
+    });
   }
 
-  var queries = req.user.team.map(function (team) {
+  var queries = team.map(function (team) {
     return {name: team};
   });
 
-  models.Team.find()
-  .or(queries)
-  .exec(function (err, team) {
-    if (err) {
-      libs.logger.error(err);
-    }
-
-    req.user.team = team;
-    req.user.email = req.body.email;
-    req.user.timestamp = Date.now();
-    models.User.findOne({id: req.user.id}, function (err, user_profile) {
-      if (err) {
-        libs.logger.error(err);
-      }
-
-      user_profile.set("team", req.user.team);
-      user_profile.set("email", req.user.email);
-      user_profile.set("timestamp", req.user.timestamp);
-      user_profile.save(function (err) {
-        if (err) {
-          var errors = Object.keys(err.errors).map(function (key) {
-            return key + ":" + err.errors[key].message;
-          });
-
-          res.json(400, {message: "Error", errors: errors});
-          return libs.logger.error(err);
-        }
-
-        req.user.status = "ok";
-
-        res.json({status: "ok"});
-      });
+  new Promise(function (resolve, reject) {
+    models.Team.find()
+    .or(queries)
+    .exec().then(resolve, reject);
+  }).then(function (teams) {
+    return models.User.update({
+      id: req.user.id
+    }, {
+      email: req.body.email,
+      team: teams
+    }).exec();
+  }).then(function () {
+    return models.User.findOne({
+      id: req.user.id
+    }).populate("team");
+  }).then(function (user) {
+    res.json({
+      status: "ok",
+      user: user
+    });
+  }).catch(function (err) {
+    res.status(500).json({
+      status: "ng",
+      errors: [err.message]
     });
   });
 });
