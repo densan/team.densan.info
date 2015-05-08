@@ -1,103 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  {{>head}}
+	{{>head}}
 </head>
 <body>
-  <div id="wrap">
-    <div class="container">
-      {{>error}}
-      
-      <header class="text-center main">
-        <h1>team.densan.info</h1>
-        <p class="lead">- 新規登録 -</p>
-      </header>
-      
-      <section class="row-fluid">
-        <div class="span6 offset3">
-          <p class="text-info text-center">
-            このアカウントは現在登録されていません。<br>
-            あなたが電算部員の場合は下記のフォームから登録してください。
-          </p>
-          {{#profile}}
-          <form id="sign_up" class="form-horizontal">
-            <div class="control-group">
-              <span class="control-label" for="id_number">Student ID</span>
-              <div class="controls">
-                <div class="value-item">{{id}}</div>
-              </div>
-            </div>
-            <div class="control-group">
-              <span class="control-label">Name</span>
-              <div class="controls">
-                <div class="value-item">{{#name}}{{last}} {{first}}{{/name}}</div>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label" for="team">Team</label>
-              <div class="controls">
-                <div style="width:206px" data-toggle="tooltip" data-placement="top" title="所属しているチームを選択してください。">
-                  <select id="team-picker" name="team" class="form-item select-block" multiple>
-                    {{#teams}}
-                    <option value="{{.}}">{{.}}</option>
-                    {{/teams}}
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label" for="email">Email</label>
-              <div class="controls">
-                <input id="email" name="email" style="height: 21px;" class="form-item" type="email" placeholder="required" required data-toggle="tooltip" data-placement="top" title="学校のメールアドレスとは別に連絡の取れるメールアドレスを登録してください。">
-              </div>
-            </div>
-            <div class="control-group">
-              <div class="controls">
-                <button class="btn btn-large btn-block btn-primary form-item" type="submit">送信</button>
-              </div>
-            </div>
-            <div class="control-group">
-              <div class="controls">
-                <a href="/logout" class="btn btn-large btn-block btn-danger form-item">中断</a>
-              </div>
-            </div>
-          </form>
-          {{/profile}}
-        </div>
-      </section>
-    </div>
-  </div>
-  
-  {{>footer}}
-  <script type="text/javascript" src="/js/libs/jquery.js"></script>
-  <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
-  <script type="text/javascript" src="/js/libs/bootstrap-select.js"></script>
-  <script type="text/javascript" src="/js/ajax.js"></script>
-  <script type="text/javascript">
-    $(function () {
-      $("#team-picker").selectpicker({style: "btn-primary", menuStyle: "dropdown-inverse"});
-      $("[data-toggle=tooltip]").tooltip({trigger: "hover"});
-      $("#sign_up").submit(function (e) {
-        e.preventDefault();
-        
-        var data = $(this).serializeArray();
-        data.push({
-          name: "_csrf",
-          value: "{{csrf_token}}"
-        });
-        
-        $.densan.ajax({
-          url: "/new",
-          data: data,
-          done: function () {
-            location.reload(true);
-          },
-          fail: function (errors) {
-            alert(errors ? errors.join("\n") : "通信エラー");
-          }
-        });
-      });
-    });
-  </script>
+	<main>
+		<div class="container">
+			{{>error}}
+
+			<heade class="center-align">
+				<h2>team.densan.info</h2>
+				<p>- 新規登録 -</p>
+			</header>
+
+			<section class="row">
+				<div class="col s10 m8 l6 offset-s1 offset-m2 offset-l3">
+					<p class="center-align">
+						このアカウントは現在登録されていません。<br>
+						あなたが電算部員の場合は下記のフォームから登録してください。
+					</p>
+					{{#profile}}
+					<form action="/new?_csrf={{csrf_token}}" method="post" v-on="submit:save">
+						<div class="input-field">
+							<input type="text" value="{{id}}" disabled>
+							<label>Student ID</label>
+						</div>
+						<div class="input-field">
+							<input type="text" value="{{#name}}{{last}} {{first}}{{/name}}" disabled>
+							<label>Name</label>
+						</div>
+						<div class="row">
+						{{#teams}}
+							<p class="col m3 s4">
+								<input id="form-team-{{.}}" name="team" type="checkbox" value="{{.}}" v-model="team_{{.}}" checked>
+								<label for="form-team-{{.}}">{{.}}</label>
+							</p>
+						{{/teams}}
+						</div>
+						<div class="input-field">
+							<input id="form-email" class="validate" class="tooltipped" name="email" type="email" required v-model="email" data-position="top" data-tooltip="学校のメールアドレスとは別に連絡の取れるメールアドレスを登録してください。">
+							<label for="form-email">Email</label>
+						</div>
+						<div>
+							<button class="btn btn-large waves-effect waves-light" type="submit">
+								送信
+								<i class="mdi-content-send right"></i>
+							</button>
+							<a href="/logout" class="btn btn-large waves-effect waves-light red accent-1">中断</a>
+						</div>
+					</form>
+					{{/profile}}
+				</div>
+			</section>
+		</div>
+	</main>
+
+	{{>footer}}
+	<script type="text/javascript" src="/js/new.js"></script>
 </body>
 </html>

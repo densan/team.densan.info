@@ -1,48 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  {{>head}}
+	{{>head}}
 </head>
 <body>
-  <div id="wrap">
-    {{>menu}}
-    
-    <div class="container">
-      <div class="row">
-        <section class="span12">
-          {{>error}}
-        </section>
-        
-        <section class="span4">
-          <h1>Your Profile</h1>
-          {{#profile}}
-            <p>id: {{id}}</p>
-            {{#name}}
-            <p>name: {{last}} {{first}}</p>
-            {{/name}}
-            <p>email: {{email}}</p>
-            <p>team:</p>
-            <ul>
-              {{#team}}
-              <li>{{.}}</li>
-              {{/team}}
-            </ul>
-          {{/profile}}
-        </section>
-        
-        <section class="span8">
-          <h2>電算部専用サイトについて</h2>
-          <p>このサイトは、大学のサーバで稼働している部員専用ページを置き換えるものです。</p>
-          <p>今後、掲示板とファイルアップローダを開発し、既存のものを置き換えていく予定です。</p>
-          <p>このシステムは全てオープンソースで開発されており、開発状況は GitHub で確認することができます。</p>
-          <p>GitHub: <a href="https://github.com/densan/team.densan.info">https://github.com/densan/team.densan.info</a></p>
-        </section>
-      </div>
-    </div>
-  </div>
-  
-  {{>footer}}
-  <script type="text/javascript" src="/js/libs/jquery.js"></script>
-  <script type="text/javascript" src="/js/libs/bootstrap.js"></script>
+	<main>
+		{{>menu}}
+
+		<div class="container">
+			<div class="row">
+				<section class="col s12">
+					{{>error}}
+				</section>
+
+				<section class="col s4">
+					<div class="card">
+						<div class="card-content">
+							<p class="card-title black-text">Your Profile</p>
+							{{#profile}}
+								<p>id: {{id}}</p>
+								{{#name}}
+								<p>name: {{last}} {{first}}</p>
+								{{/name}}
+								<p>email: {{email}}</p>
+								<p>team:</p>
+								<ul>
+									{{#team}}
+									<li>{{.}}</li>
+									{{/team}}
+								</ul>
+							{{/profile}}
+						</div>
+					</div>
+				</section>
+
+				<section class="col s8">
+					<h4>電算部内サイトについて</h4>
+					<p>このサイトは、大学のサーバで稼働している部員専用ページを置き換えるものです。</p>
+					<p>今後、掲示板とファイルアップローダを開発し、既存のものを置き換えていく予定です。</p>
+					<p>このシステムは全てオープンソースで開発されており、開発状況は GitHub で確認することができます。</p>
+					<p>GitHub: <a href="https://github.com/densan/team.densan.info">https://github.com/densan/team.densan.info</a></p>
+				</section>
+			</div>
+		</div>
+	</main>
+
+	{{>footer}}
 </body>
 </html>

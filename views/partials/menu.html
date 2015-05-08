@@ -1,30 +1,38 @@
-<div class="navbar navbar-inverse navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <ul class="nav">
-        <li class="{{#menu}}Home{{/menu}}"><a href="/">Home</a></li>
-        <li class="{{#menu}}Members{{/menu}}">
-          <a href="/members">Members</a>
-          <ul>
-          {{#teams}}
-            <li><a href="/members/{{.}}">{{.}}</a></li>
-          {{/teams}}
-          </ul>
-        </li>
-        {{#admin}}
-        <li class="{{#menu}}Admin{{/menu}}">
-          <a href="/admin">Admin</a>
-          <ul>
-            <li><a href="/admin/role">Role</a></li>
-            <li><a href="/admin/team">Team</a></li>
-          </ul>
-        </li>
-        {{/admin}}
-        <li class="{{#menu}}Profile{{/menu}}"><a href="/profile">Profile</a></li>
-      </ul>
-      <ul class="nav pull-right">
-        <li class="{{#menu}}Logout{{/menu}}"><a href="/logout">Logout</a></li>
-      </ul>
-    </div>
-  </div>
+<div class="navbar-fixed">
+	<nav>
+		<div class="nav-wrapper container">
+			<ul>
+				<li class="{{#menu}}Home{{/menu}}"><a href="/">Home</a></li>
+				<li class="{{#menu}}Members{{/menu}}">
+					<a class="dropdown-button" href="#!" data-activates="teams">
+						Members <i class="mdi-navigation-arrow-drop-down right"></i>
+					</a>
+					<ul id="teams" class="dropdown-content">
+						<li><a href="/members">All</a></li>
+						<li class="divider"></li>
+					{{#teams}}
+						<li><a href="/members/{{.}}">{{.}}</a></li>
+					{{/teams}}
+					</ul>
+				</li>
+				{{#admin}}
+				<li class="{{#menu}}Admin{{/menu}}">
+					<a class="dropdown-button" href="#!" data-activates="admin">
+						Admin <i class="mdi-navigation-arrow-drop-down right"></i>
+					</a>
+					<ul id="admin" class="dropdown-content">
+						<li><a href="/admin">Admin</a></li>
+						<li class="divider"></li>
+						<li><a href="/admin/role">Role</a></li>
+						<li><a href="/admin/team">Team</a></li>
+					</ul>
+				</li>
+				{{/admin}}
+				<li class="{{#menu}}Profile{{/menu}}"><a href="/profile">Profile</a></li>
+			</ul>
+			<ul class="right">
+			  <li><a href="/logout">Logout</a></li>
+			</ul>
+		</div>
+	</nav>
 </div>

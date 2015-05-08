@@ -13,7 +13,7 @@ var routes = mlo(__dirname).load();
 // middleware
 router.use(function (req, res, next) {
   res.locals.admin = req.body && req.query.pass === process.env.MAINTENANCE_PASS || req.user && ~ req.user.role.permissions.indexOf("admin");
-  res.locals.profile = req.user;
+  res.locals.profile = req.user || null;
   res.locals.root = res.locals;
   models.Team.getNameList(function (err, teams) {
     if (err) {
@@ -28,7 +28,6 @@ router.use(function (req, res, next) {
 
 router.get("/", function (req, res) {
   res.locals.error = req.flash("error");
-  res.locals.profile = null;
   res.locals.title = "Login";
   res.locals.template = "index";
 
@@ -40,7 +39,6 @@ router.get("/", function (req, res) {
       return res.redirect(redirect[0]);
     }
 
-    res.locals.profile = req.user;
     res.locals.title = "Home";
     res.locals.template = "home";
   } else if (req.session.status === "ng") {
@@ -69,10 +67,13 @@ router.get("/logout", function (req, res) {
 // check logged in
 router.get("/:page*", function (req, res, next) {
   if (! req.user && req.params.page !== "auth") {
+    if (req.xhr) {
+      return res.json(401, {message: "Unauthorized"});
+    }
+
     req.flash("redirect");
     req.flash("redirect", req.originalUrl);
-    res.redirect("/auth");
-    return false;
+    return res.redirect("/auth");
   }
 
   next();

@@ -53,11 +53,6 @@ router.post("/role", function (req, res) {
     return res.json(400, {message: "Bad Request"});
   }
 
-  // check logged in
-  if (! req.user) {
-    return res.json(401, {message: "Unauthorized"});
-  }
-
   if (req.body.roles.length < 1) {
     return res.json(400, {message: "Roles must have least one role."});
   }
