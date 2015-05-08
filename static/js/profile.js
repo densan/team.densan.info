@@ -44,8 +44,9 @@
         }).done(function (data) {
           console.log(data);
           Materialize.toast("Saved.", 3000);
-        }).fail(function (err) {
-          console.error(err);
+        }).fail(function (xhr) {
+          var res = JSON.parse(xhr.responseText);
+          console.error(res);
         });
       }
     }

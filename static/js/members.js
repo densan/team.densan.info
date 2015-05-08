@@ -1,5 +1,5 @@
 /**
- *
+ * Members
  *
  */
 /* globals Vue */
