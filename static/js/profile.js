@@ -47,6 +47,7 @@
         }).fail(function (xhr) {
           var res = JSON.parse(xhr.responseText);
           console.error(res);
+          Materialize.toast("⚠error", 3000);
         });
       }
     }
