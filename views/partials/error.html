@@ -4,3 +4,6 @@
 	{{{message}}}
 </p>
 {{/error}}
+
+{{! CSRF TOKEN }}
+<input type="hidden" value="{{csrf_token}}" disabled v-model="token">

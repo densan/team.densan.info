@@ -1,71 +1,5 @@
 @charset "utf-8";
 
-header.main {
-  margin-bottom: 40px;
-}
-
-.control-group .controls .value-item {
-  padding: 5px 10px;
-}
-
-.controls .form-item {
-  width: 206px;
-}
-.controls input.form-item {
-  width: 192px;
-}
-
-dl.list {
-  position: relative;
-  margin: 10px 0 20px 0;
-}
-dl.list dt {
-  width: 90px;
-  height: 25px;
-}
-dl.list dd {
-  position: relative;
-  margin: -25px 0 0 100px;
-}
-
-.team-picker {
-  position: relative;
-  width: 200px;
-}
-.team-picker > * {
-  width: 140px;
-}
-
-a[data-toggle="tab"] {
-  text-decoration: none;
-}
-
-.tabbable > ul > li > a {
-  padding-right: 25px;
-}
-.tabbable > ul > li > .close {
-  position: relative;
-  margin-top: -32px;
-  right: 5px;
-  height: ;
-  display: none;
-}
-.tabbable > ul > li:hover > .close {
-  display: block;
-}
-
-.saved {
-  margin: 0 10px;
-  padding: 10px;
-  font-size: 14px;
-  color: #e74c3c;
-  display: none;
-}
-
-.sort {
-  margin: 3px 10px;
-}
-
 body {
   display: flex;
   min-height: 100vh;
@@ -74,4 +8,12 @@ body {
 
 main {
   flex: 1 0 auto;
+}
+
+@media only screen and (max-width: 600px) {
+  .container-fullwidth {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

@@ -14,7 +14,7 @@
 			<p>プロフィール情報の設定</p>
 			<hr>
 			{{#profile}}
-			<form action="?_csrf={{csrf_token}}" method="post" v-on="submit:save">
+			<form action="/profile" method="post" v-on="submit:save">
 				<div class="input-field">
 					<input type="text" value="{{id}}" disabled>
 					<label>ID</label>
