@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	{{>head}}
+</head>
+<body>
+	<main>
+		{{>menu}}
+
+		<div class="container">
+			{{>error}}
+
+			<div class="row">
+				<div class="col s12">
+					<h2 class="header">Uploader</h2>
+
+					<div style="position: relative; width: 100%">
+						<button class="btn-floating btn-large waves-effect waves-light modal-trigger red accent-1" style="position:absolute; right: 0; bottom: 1.424rem" data-target="upload">
+							<i class="mdi-content-add left"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="divider"></div>
+		</div>
+
+		<div class="container container-fullwidth section">
+			<table class="striped">
+				<thead>
+					<tr>
+						<th>name</th>
+						<th>type</th>
+						<th>user</th>
+						<th>timestamp</th>
+						<th>size</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-show="! files">
+						<td colspan="6">
+							<div class="progress">
+								<div class="indeterminate"></div>
+							</div>
+						</td>
+					</tr>
+					<tr v-repeat="file:files">
+						<td v-text="file.name"></td>
+						<td v-text="file.type"></td>
+						<td v-text="file.user.name | nameFormat"></td>
+						<td v-text="file.timestamp | dateFormat"></td>
+						<td v-text="file.size | sizeFormat"></td>
+						<td>
+							<a class="btn-floating waves-effect waves-light" v-attr="href:file.path | formatPath">
+								<i class="mdi-file-file-download"></i>
+							</a>
+							<button type="button" class="btn-floating waves-effect waves-light red" v-if="file | ownerCheck" v-on="click:remove($event, file)">
+								<i class="mdi-action-delete"></i>
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		{{! MODAL }}
+		<div id="upload" class="modal">
+			<form action="/upload?_csrf={{csrf_token}}" method="post" v-on="submit:upload">
+				<div class="modal-content">
+					<h4>Upload</h4>
+					<div class="input-field">
+						<input id="name" name="name" type="text">
+						<label for="name">Name</label>
+					</div>
+					<div class="file-field input-field">
+						<input class="file-path" type="text" readonly>
+						<div class="btn">
+							<span>File</span>
+							<input name="file" type="file" required>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="modal-action waves-effect waves-green btn-flat">Upload</button>
+					<button type="button" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</main>
+
+	{{>footer}}
+	<script type="text/javascript" src="/js/upload.js"></script>
+</body>
+</html>

@@ -1,9 +1,5 @@
 .*
 
-# Git
-!.gitignore
-!.gitkeep
-
 # Node.js
 node_modules
 *.log
@@ -27,3 +23,10 @@ logs/*
 
 # Code Climate
 !.codeclimate.yml
+
+# Upload
+static/upload/*
+
+# Git
+!.gitignore
+!.gitkeep
