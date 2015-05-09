@@ -8,6 +8,7 @@
   var vm = new Vue({
     el: "main",
     data: {
+      token: "",
       email: ""
     },
     ready: function () {
@@ -25,6 +26,7 @@
 
         var $form = $(event.target);
         var data = {
+          _csrf: vm.$data.token,
           email: vm.$data.email,
           team: []
         };

@@ -1,13 +1,18 @@
 <div class="navbar-fixed">
-	<nav>
-		<div class="nav-wrapper container">
-			<ul>
+	<nav class="green lighten-1">
+		<div class="nav-wrapper container container-fullwidth">
+			<a class="button-collapse" data-activates="mobile-nav" href="#">
+				<i class="mdi-navigation-menu"></i>
+			</a>
+
+			{{! DESKTOP NAVBAR }}
+			<ul class="hide-on-med-and-down">
 				<li class="{{#menu}}Home{{/menu}}"><a href="/">Home</a></li>
 				<li class="{{#menu}}Members{{/menu}}">
-					<a class="dropdown-button" href="#!" data-activates="teams">
+					<a class="dropdown-button" href="#!" data-activates="nav-members">
 						Members <i class="mdi-navigation-arrow-drop-down right"></i>
 					</a>
-					<ul id="teams" class="dropdown-content">
+					<ul id="nav-members" class="dropdown-content">
 						<li><a href="/members">All</a></li>
 						<li class="divider"></li>
 					{{#teams}}
@@ -15,12 +20,13 @@
 					{{/teams}}
 					</ul>
 				</li>
+				<li class="{{#menu}}Uploader{{/menu}}"><a href="/upload">Uploader</a></li>
 				{{#admin}}
 				<li class="{{#menu}}Admin{{/menu}}">
-					<a class="dropdown-button" href="#!" data-activates="admin">
+					<a class="dropdown-button" href="#!" data-activates="nav-admin">
 						Admin <i class="mdi-navigation-arrow-drop-down right"></i>
 					</a>
-					<ul id="admin" class="dropdown-content">
+					<ul id="nav-admin" class="dropdown-content">
 						<li><a href="/admin">Admin</a></li>
 						<li class="divider"></li>
 						<li><a href="/admin/role">Role</a></li>
@@ -30,6 +36,52 @@
 				{{/admin}}
 				<li class="{{#menu}}Profile{{/menu}}"><a href="/profile">Profile</a></li>
 			</ul>
+
+			{{! MOBILE SLIDE-NAV }}
+			<ul id="mobile-nav" class="side-nav">
+				<li class="{{#menu}}Home{{/menu}}"><a href="/">Home</a></li>
+				<li class="no-padding">
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class="{{#menu}}Members{{/menu}} collapsible-header" href="#">
+								Members <i class="mdi-navigation-arrow-drop-down"></i>
+							</a>
+							<div class="collapsible-body">
+								<ul>
+									<li><a href="/members">All</a></li>
+									<li class="divider"></li>
+								{{#teams}}
+									<li><a href="/members/{{.}}">{{.}}</a></li>
+								{{/teams}}
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li class="{{#menu}}Uploader{{/menu}}"><a href="/upload">Uploader</a></li>
+				{{#admin}}
+				<li class="no-padding">
+					<ul class="collapsible collapsible-accordion">
+						<li>
+							<a class="{{#menu}}Admin{{/menu}} collapsible-header" href="#">
+								Admin <i class="mdi-navigation-arrow-drop-down"></i>
+							</a>
+							<div class="collapsible-body">
+								<ul>
+									<li><a href="/admin">Admin</a></li>
+									<li class="divider"></li>
+									<li><a href="/admin/role">Role</a></li>
+									<li><a href="/admin/team">Team</a></li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</li>
+				{{/admin}}
+				<li class="{{#menu}}Profile{{/menu}}"><a href="/profile">Profile</a></li>
+			</ul>
+
+			{{! LOGOUT }}
 			<ul class="right">
 			  <li><a href="/logout">Logout</a></li>
 			</ul>
