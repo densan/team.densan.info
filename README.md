@@ -12,6 +12,8 @@ Requirements
 
 How to start
 ------------
+1. 設定ファイル `config/default.yml` を `config/development.yml` にコピー
+1. 設定ファイル `config/development.yml` を正しく設定
 1. プロジェクトディレクトリの直下で `npm install` を実行
 1. db ディレクトリの中で `mongod -f db/mongod.conf` を(別の端末で)実行
 1. プロジェクトディレクトリの直下で `node boot development` を実行
