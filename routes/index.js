@@ -7,12 +7,16 @@ var router = express.Router();
 var libs = require("../libs");
 var models = require("../models");
 var mlo = require("mlo");
+var config = require("config");
 
 var routes = mlo(__dirname).load();
 
 // middleware
 router.use(function (req, res, next) {
-  res.locals.admin = req.body && req.query.pass === process.env.MAINTENANCE_PASS || req.user && ~ req.user.role.permissions.indexOf("admin");
+  res.locals.admin = false;
+  if (req.user) {
+    res.locals.admin = req.user.id === String(config.maintenance.adminId) || ~ req.user.role.permissions.indexOf("admin");
+  }
   res.locals.profile = req.user || null;
   res.locals.root = res.locals;
   models.Team.getNameList(function (err, teams) {
